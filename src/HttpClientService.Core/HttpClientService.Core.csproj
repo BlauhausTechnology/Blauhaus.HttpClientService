@@ -3,7 +3,10 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
     <Version>0.1.0</Version>
-    <Description>Simple mocbable HttpClient wrapper</Description>
+    <Description>Simple mockable HttpClient wrapper</Description>
+    <PackageId>Blauhaus.HttpClientService</PackageId>
+    <Authors>Blauhaus</Authors>
+    <Product>Blauhaus</Product>
   </PropertyGroup>
   
   <ItemGroup>
