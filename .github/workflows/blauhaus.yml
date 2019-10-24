@@ -1,17 +1,27 @@
-name: CI
-
-on: [push]
+name: Blauhaus Packages
+on:
+  push:
+    branches:
+    - release/*
 
 jobs:
+
   build:
-
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v1
-    - name: Run a one-line script
-      run: echo Hello, world!
-    - name: Run a multi-line script
-      run: |
-        echo Add other actions to build,
-        echo test, and deploy your project.
+     runs-on: ubuntu-latest
+     steps:
+     - uses: actions/checkout@v1
+     - name: Set Version
+       run: |
+        npm install @actions/core --save
+        node ./scripts/getversion.js
+     - name: Setup .NET Core
+       uses: actions/setup-dotnet@v1
+       with:
+         dotnet-version: 2.2.108
+     - name: Build NuGet Packages
+       run: |
+        dotnet pack -p:PackageVersion=${VERSION_NAME} ./src/Blauhaus.HttpClientService.sln --configuration Release_Blauhaus --output ./
+        dotnet test ./Blauhaus.HttpClientService/Blauhaus.HttpClientService.sln
+     - name: Deploy NuGet Packages
+       run: |
+        dotnet nuget push ./src/Blauhaus.HttpClientService/Blauhaus.HttpClientService.${VERSION_NAME}.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
