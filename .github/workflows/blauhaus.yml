@@ -14,10 +14,6 @@ jobs:
        run: |
         npm install @actions/core --save
         node ./scripts/getversion.js
-     - name: Setup .NET Core
-       uses: actions/setup-dotnet@v1
-       with:
-         dotnet-version: 2.2.108
      - name: Build NuGet Packages
        run: |
         dotnet pack -p:PackageVersion=${VERSION_NAME} ./src/Blauhaus.HttpClientService.sln --configuration Release --output ./
