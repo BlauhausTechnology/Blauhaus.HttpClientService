@@ -17,7 +17,7 @@ jobs:
      - name: Build NuGet Packages
        run: |
         dotnet pack -p:PackageVersion=${VERSION_NAME} ./src/Blauhaus.HttpClientService.sln --configuration Release --output ./
-        dotnet test ./Blauhaus.HttpClientService/Blauhaus.HttpClientService.sln
+        dotnet test ./src/Blauhaus.HttpClientService.sln
      - name: Deploy NuGet Packages
        run: |
         dotnet nuget push ./src/Blauhaus.HttpClientService/Blauhaus.HttpClientService.${VERSION_NAME}.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
