@@ -20,7 +20,7 @@ jobs:
          dotnet-version: 2.2.108
      - name: Build NuGet Packages
        run: |
-        dotnet pack -p:PackageVersion=${VERSION_NAME} ./src/Blauhaus.HttpClientService.sln --configuration Release_Blauhaus --output ./
+        dotnet pack -p:PackageVersion=${VERSION_NAME} ./src/Blauhaus.HttpClientService.sln --configuration Release --output ./
         dotnet test ./Blauhaus.HttpClientService/Blauhaus.HttpClientService.sln
      - name: Deploy NuGet Packages
        run: |
