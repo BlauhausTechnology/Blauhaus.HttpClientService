@@ -6,6 +6,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using HttpClientService.Core.Request;
 using Newtonsoft.Json;
 
 namespace HttpClientService.Core.Service
@@ -26,6 +27,32 @@ namespace HttpClientService.Core.Service
         {
             var httpContent = new StringContent(JsonConvert.SerializeObject(dto), new UTF8Encoding(), "application/json");
             var httpResponse = await GetClient().PostAsync(route, httpContent, token);
+
+            if (!httpResponse.IsSuccessStatusCode)
+            {
+
+                if (httpResponse.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    throw new UnauthorizedAccessException();
+                }
+
+                var message = await httpResponse.Content.ReadAsStringAsync();
+                var error = JsonConvert.DeserializeObject<HttpError>(message);
+
+                throw new HttpClientServiceException(httpResponse.StatusCode, error.Message);
+            }
+            
+            var jsonBody = await httpResponse.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<TResponse>(jsonBody);
+        }
+
+        public async Task<TResponse> PostAsync<TRequest, TResponse>(IHttpRequestWrapper<TRequest> request, CancellationToken token)
+        {
+            var url = ExtractUrlFromWrapper(request);
+            var httpContent = new StringContent(JsonConvert.SerializeObject(request.Request), new UTF8Encoding(), "application/json");
+            var client = GetClient(request.RequestHeaders);
+            
+            var httpResponse = await client.PostAsync(url, httpContent, token);
 
             if (!httpResponse.IsSuccessStatusCode)
             {
@@ -74,19 +101,47 @@ namespace HttpClientService.Core.Service
             _defaultRequestHeaders.Clear();
         }
 
-        private HttpClient GetClient()
+        private HttpClient GetClient(Dictionary<string, string> requestHeaders = null)
         {
             var client = _httpClientFactory.CreateClient();
             client.Timeout =TimeSpan.FromSeconds(90);
 
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            foreach (var defaultRequestHeader in _defaultRequestHeaders)
+            if (requestHeaders == null || requestHeaders.Count == 0)
             {
-                client.DefaultRequestHeaders.Add(defaultRequestHeader.Key, defaultRequestHeader.Value);
+                foreach (var defaultRequestHeader in _defaultRequestHeaders)
+                {
+                    client.DefaultRequestHeaders.Add(defaultRequestHeader.Key, defaultRequestHeader.Value);
+                }
+            }
+            else
+            {
+                foreach (var requestHeader in requestHeaders)
+                {
+                    client.DefaultRequestHeaders.Add(requestHeader.Key, requestHeader.Value);
+                }
             }
             
             return client;
         }
+        
+        private static string ExtractUrlFromWrapper(IHttpRequestWrapper request)
+        {
+            var url = new StringBuilder(request.Endpoint);
+            if (request.QueryStringParameters.Count > 0)
+            {
+                url.Append("?");
+                foreach (var parameter in request.QueryStringParameters)
+                {
+                    url.Append(parameter.Key).Append("=").Append(parameter.Value).Append("&");
+                }
+
+                url.Length -= 1;
+            }
+
+            return url.ToString();
+        }
+
     }
 }
