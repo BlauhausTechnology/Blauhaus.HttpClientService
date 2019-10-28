@@ -46,7 +46,7 @@ namespace HttpClientService.Tests.Tests
             }
 
             [Test]
-            public void WHEN_post_fails_SHOULD_throw()
+            public void WHEN_post_fails_with_error_message_SHOULD_throw_message()
             {
                 //Arrange
                 MockHttpClientFactory.Where_CreateClient_returns(new HttpClient(MockMessageHandler
@@ -60,6 +60,20 @@ namespace HttpClientService.Tests.Tests
                 //Assert
                 Assert.ThrowsAsync<HttpClientServiceException>(async () =>
                     await Sut.PostAsync("http://baseaddress.com/testroute", new TestDto {TestDtoProperty = "hello world"}, CancellationToken.None), "bad luck");
+            }
+
+            [Test]
+            public void WHEN_post_fails_without_error_message_SHOULD_throw()
+            {
+                //Arrange
+                MockHttpClientFactory.Where_CreateClient_returns(new HttpClient(MockMessageHandler
+                    .Where_SendAsync_returns_StatusCode(HttpStatusCode.FailedDependency)
+                    .Where_SendAsync_returns_ReasonPhrase("Bad luck")
+                    .Build().Object));
+
+                //Assert
+                Assert.ThrowsAsync<HttpClientServiceException>(async () =>
+                    await Sut.PostAsync("http://baseaddress.com/testroute", new TestDto {TestDtoProperty = "hello world"}, CancellationToken.None));
             }
 
             [Test]
@@ -125,6 +139,20 @@ namespace HttpClientService.Tests.Tests
                 Assert.ThrowsAsync<HttpClientServiceException>(async () =>
                     await Sut.PostAsync<TestDto, TestDto>("http://baseaddress.com/testroute", new TestDto {TestDtoProperty = "hello world"},
                         CancellationToken.None), "bad luck");
+            }
+
+            [Test]
+            public void WHEN_post_fails_without_error_message_SHOULD_throw()
+            {
+                //Arrange
+                MockHttpClientFactory.Where_CreateClient_returns(new HttpClient(MockMessageHandler
+                    .Where_SendAsync_returns_StatusCode(HttpStatusCode.FailedDependency)
+                    .Where_SendAsync_returns_ReasonPhrase("Bad luck")
+                    .Build().Object));
+
+                //Assert
+                Assert.ThrowsAsync<HttpClientServiceException>(async () =>
+                    await Sut.PostAsync<TestDto, TestDto>("http://baseaddress.com/testroute", new TestDto {TestDtoProperty = "hello world"}, CancellationToken.None));
             }
 
             [Test]
@@ -210,7 +238,7 @@ namespace HttpClientService.Tests.Tests
             }
 
             [Test]
-            public void WHEN_post_fails_SHOULD_throw()
+            public void WHEN_post_fails_with_error_message_SHOULD_throw()
             {
                 //Arrange
                 var wrapper = new HttpRequestWrapper<TestDto>("http://baseaddress.com/testroute", new TestDto {TestDtoProperty = "hello world"});
@@ -225,6 +253,22 @@ namespace HttpClientService.Tests.Tests
                 //Assert
                 Assert.ThrowsAsync<HttpClientServiceException>(async () =>
                     await Sut.PostAsync<TestDto, TestDto>(wrapper, CancellationToken.None), "bad luck");
+            }
+
+            [Test]
+            public void WHEN_post_fails_without_error_message_SHOULD_throw()
+            {
+                //Arrange
+                var wrapper = new HttpRequestWrapper<TestDto>("http://baseaddress.com/testroute", new TestDto {TestDtoProperty = "hello world"});
+                MockHttpClientFactory.Where_CreateClient_returns(new HttpClient(MockMessageHandler
+                    .Where_SendAsync_returns_StatusCode(HttpStatusCode.FailedDependency)
+                    .Where_SendAsync_returns_ReasonPhrase("Bad luck")
+                    .Build().Object));
+
+                //Assert
+                Assert.ThrowsAsync<HttpClientServiceException>(async () =>
+                    await Sut.PostAsync<TestDto, TestDto>(wrapper, CancellationToken.None));
+
             }
 
             [Test]

@@ -30,16 +30,7 @@ namespace HttpClientService.Core.Service
 
             if (!httpResponse.IsSuccessStatusCode)
             {
-
-                if (httpResponse.StatusCode == HttpStatusCode.Unauthorized)
-                {
-                    throw new UnauthorizedAccessException();
-                }
-
-                var message = await httpResponse.Content.ReadAsStringAsync();
-                var error = JsonConvert.DeserializeObject<HttpError>(message);
-
-                throw new HttpClientServiceException(httpResponse.StatusCode, error.Message);
+                await HandleFailResponseAsync(httpResponse);
             }
             
             var jsonBody = await httpResponse.Content.ReadAsStringAsync();
@@ -56,16 +47,7 @@ namespace HttpClientService.Core.Service
 
             if (!httpResponse.IsSuccessStatusCode)
             {
-
-                if (httpResponse.StatusCode == HttpStatusCode.Unauthorized)
-                {
-                    throw new UnauthorizedAccessException();
-                }
-
-                var message = await httpResponse.Content.ReadAsStringAsync();
-                var error = JsonConvert.DeserializeObject<HttpError>(message);
-
-                throw new HttpClientServiceException(httpResponse.StatusCode, error.Message);
+                await HandleFailResponseAsync(httpResponse);
             }
             
             var jsonBody = await httpResponse.Content.ReadAsStringAsync();
@@ -79,16 +61,21 @@ namespace HttpClientService.Core.Service
 
             if (!httpResponse.IsSuccessStatusCode)
             {
-                if (httpResponse.StatusCode == HttpStatusCode.Unauthorized)
-                {
-                    throw new UnauthorizedAccessException();
-                }
-                
-                var message = await httpResponse.Content.ReadAsStringAsync();
-                var error = JsonConvert.DeserializeObject<HttpError>(message);
-
-                throw new HttpClientServiceException(httpResponse.StatusCode, error.Message);
+                await HandleFailResponseAsync(httpResponse);
             }
+        }
+
+        private static async Task HandleFailResponseAsync(HttpResponseMessage httpResponse)
+        {
+            if (httpResponse.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                throw new UnauthorizedAccessException();
+            }
+
+            var message = await httpResponse.Content.ReadAsStringAsync();
+            var error = JsonConvert.DeserializeObject<HttpError>(message);
+            var errorMessage = error == null ? string.Empty : error.Message;
+            throw new HttpClientServiceException(httpResponse.StatusCode, errorMessage);
         }
 
         public void SetDefaultRequestHeader(string key, string value)
