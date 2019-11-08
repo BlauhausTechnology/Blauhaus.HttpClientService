@@ -84,14 +84,13 @@ namespace HttpClientService.Tests.Mocks
                     ItExpr.IsAny<CancellationToken>());
         }
 
-        public void VerifyHeader(string key, string value)
+        public void VerifyHeader(string key, string value, int times = 1)
         {
             this.Protected()
-                .Verify<Task<HttpResponseMessage>>("SendAsync", Times.Once(),
+                .Verify<Task<HttpResponseMessage>>("SendAsync", Times.Exactly(times),
                     ItExpr.Is<HttpRequestMessage>(y => y.Headers.Any(x => x.Key == key && x.Value.First() == value)),
                     ItExpr.IsAny<CancellationToken>());
         }
-
 
     }
 }

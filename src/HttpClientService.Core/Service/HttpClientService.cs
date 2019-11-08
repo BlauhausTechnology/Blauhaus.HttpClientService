@@ -130,5 +130,15 @@ namespace HttpClientService.Core.Service
             return url.ToString();
         }
 
+        public void HandleAccessToken(string authenticatedAccessToken)
+        {
+            _defaultRequestHeaders["bearer"] = authenticatedAccessToken;
+        }
+
+
+        public void ClearAccessToken()
+        {
+            _defaultRequestHeaders["bearer"] = string.Empty;
+        }
     }
 }
