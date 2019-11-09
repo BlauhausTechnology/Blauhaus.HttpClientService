@@ -19,7 +19,7 @@ namespace HttpClientService.Tests.Tests
 
             //Assert
             await Sut.PostAsync("http://www.google.com/", new TestDto(), CancellationToken.None);
-            MockMessageHandler.VerifyHeader("bearer", "authToken");
+            MockMessageHandler.VerifyAuthHeader("Bearer", "authToken");
         }
     }
 }

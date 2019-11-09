@@ -92,5 +92,15 @@ namespace HttpClientService.Tests.Mocks
                     ItExpr.IsAny<CancellationToken>());
         }
 
+        public void VerifyAuthHeader(string scheme, string value, int times = 1)
+        {
+            this.Protected()
+                .Verify<Task<HttpResponseMessage>>("SendAsync", Times.Exactly(times),
+                    ItExpr.Is<HttpRequestMessage>(y => 
+                        y.Headers.Authorization.Scheme == scheme && 
+                        y.Headers.Authorization.Parameter == value),
+                    ItExpr.IsAny<CancellationToken>());
+        }
+
     }
 }

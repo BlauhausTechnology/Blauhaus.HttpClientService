@@ -16,6 +16,7 @@ namespace HttpClientService.Core.Service
         private readonly IHttpClientServiceConfig _config;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly Dictionary<string, string> _defaultRequestHeaders = new Dictionary<string, string>();
+        private AuthenticationHeaderValue _authHeader;
 
         public HttpClientService(IHttpClientServiceConfig config, IHttpClientFactory httpClientFactory)
         {
@@ -109,6 +110,8 @@ namespace HttpClientService.Core.Service
                     client.DefaultRequestHeaders.Add(requestHeader.Key, requestHeader.Value);
                 }
             }
+
+            client.DefaultRequestHeaders.Authorization = _authHeader;
             
             return client;
         }
@@ -132,13 +135,13 @@ namespace HttpClientService.Core.Service
 
         public void HandleAccessToken(string authenticatedAccessToken)
         {
-            _defaultRequestHeaders["bearer"] = authenticatedAccessToken;
+            _authHeader = new AuthenticationHeaderValue("Bearer", authenticatedAccessToken);
         }
 
 
         public void ClearAccessToken()
         {
-            _defaultRequestHeaders["bearer"] = string.Empty;
+            _authHeader = new AuthenticationHeaderValue("Bearer", String.Empty);
         }
     }
 }
