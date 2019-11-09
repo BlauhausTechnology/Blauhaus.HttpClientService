@@ -1,10 +1,9 @@
-﻿using System.Net.Http;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using HttpClientService.Tests.Tests._Base;
+using HttpClient.Tests.Tests._Base;
 using NUnit.Framework;
 
-namespace HttpClientService.Tests.Tests
+namespace HttpClient.Tests.Tests
 {
     public class ClearAccessTokenTests : BaseHttpClientServiceTest
     {
@@ -12,7 +11,7 @@ namespace HttpClientService.Tests.Tests
         public async Task SHOULD_remove_bearer_token_from_requests()
         {
             //Arrange
-            MockHttpClientFactory.Where_CreateClient_returns(new HttpClient(MockMessageHandler.Build().Object));
+            MockHttpClientFactory.Where_CreateClient_returns(new System.Net.Http.HttpClient(MockMessageHandler.Build().Object));
             Sut.HandleAccessToken("authToken");
 
             //Act

@@ -1,4 +1,4 @@
-﻿namespace HttpClientService.Core.Service
+﻿namespace HttpClient.Core.Service
 {
     public class HttpError
     {

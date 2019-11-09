@@ -1,9 +1,8 @@
 ﻿using Blauhaus.Tests.Helpers;
-using HttpClientService.Core.Service;
-using HttpClientService.Tests.Mocks;
+using HttpClient.Tests.Mocks;
 using NUnit.Framework;
 
-namespace HttpClientService.Tests.Tests._Base
+namespace HttpClient.Tests.Tests._Base
 {
     public class BaseHttpClientServiceTest : BaseUnitTest<Core.Service.HttpClientService>
     {

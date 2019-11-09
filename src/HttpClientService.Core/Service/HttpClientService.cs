@@ -6,10 +6,11 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using HttpClientService.Core.Request;
+using HttpClient.Core.Config;
+using HttpClient.Core.Request;
 using Newtonsoft.Json;
 
-namespace HttpClientService.Core.Service
+namespace HttpClient.Core.Service
 {
     public class HttpClientService : IHttpClientService
     {
@@ -89,7 +90,7 @@ namespace HttpClientService.Core.Service
             _defaultRequestHeaders.Clear();
         }
 
-        private HttpClient GetClient(Dictionary<string, string> requestHeaders = null)
+        private System.Net.Http.HttpClient GetClient(Dictionary<string, string> requestHeaders = null)
         {
             var client = _httpClientFactory.CreateClient();
             client.Timeout =TimeSpan.FromSeconds(90);

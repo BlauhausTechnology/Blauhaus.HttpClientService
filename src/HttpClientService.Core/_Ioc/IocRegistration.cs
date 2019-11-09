@@ -1,10 +1,10 @@
 ﻿using System.Net.Http;
 using Blauhaus.Ioc.Abstractions;
-using HttpClientService.Core.Config;
-using HttpClientService.Core.Service;
+using HttpClient.Core.Config;
+using HttpClient.Core.Service;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace HttpClientService.Core._Ioc
+namespace HttpClient.Core._Ioc
 {
     public static class IocRegistration
     {
