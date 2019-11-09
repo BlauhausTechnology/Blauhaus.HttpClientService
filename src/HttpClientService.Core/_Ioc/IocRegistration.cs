@@ -1,5 +1,6 @@
 ﻿using System.Net.Http;
 using Blauhaus.Ioc.Abstractions;
+using HttpClientService.Core.Config;
 using HttpClientService.Core.Service;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,6 +16,7 @@ namespace HttpClientService.Core._Ioc
                 .GetService(typeof(IHttpClientFactory));
             iocService.RegisterInstance(httpClientFactory);
             iocService.RegisterImplementation<IHttpClientService, Service.HttpClientService>(IocLifetime.Singleton);
+            iocService.RegisterImplementation<IHttpClientServiceConfig, DefaultHttpClientServiceConfig>(IocLifetime.Singleton);
             return iocService;
         }
     }
