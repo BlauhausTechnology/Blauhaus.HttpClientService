@@ -1,5 +1,7 @@
 ﻿using Blauhaus.Tests.Helpers;
 using HttpClient.Tests.Mocks;
+using Microsoft.Extensions.Logging;
+using Moq;
 using NUnit.Framework;
 
 namespace HttpClient.Tests.Tests._Base
@@ -17,7 +19,7 @@ namespace HttpClient.Tests.Tests._Base
 
         protected override Core.Service.HttpClientService ConstructSut()
         {
-            return new Core.Service.HttpClientService(MockClientServiceConfig.Object, MockHttpClientFactory.Object);
+            return new Core.Service.HttpClientService(MockClientServiceConfig.Object, MockHttpClientFactory.Object, Mock.Of<ILogger>());
         }
 
         [SetUp]

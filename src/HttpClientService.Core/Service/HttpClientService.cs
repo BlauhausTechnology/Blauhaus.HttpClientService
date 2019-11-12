@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using HttpClient.Core.Config;
 using HttpClient.Core.Request;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace HttpClient.Core.Service
@@ -16,13 +17,15 @@ namespace HttpClient.Core.Service
     {
         private readonly IHttpClientServiceConfig _config;
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly ILogger _logger;
         private readonly Dictionary<string, string> _defaultRequestHeaders = new Dictionary<string, string>();
         private AuthenticationHeaderValue _authHeader;
 
-        public HttpClientService(IHttpClientServiceConfig config, IHttpClientFactory httpClientFactory)
+        public HttpClientService(IHttpClientServiceConfig config, IHttpClientFactory httpClientFactory, ILogger logger)
         {
             _config = config;
             _httpClientFactory = httpClientFactory;
+            _logger = logger;
         }
 
         public async Task<TResponse> PostAsync<TRequest, TResponse>(string route, TRequest dto, CancellationToken token)
@@ -34,9 +37,8 @@ namespace HttpClient.Core.Service
             {
                 await HandleFailResponseAsync(httpResponse);
             }
-            
-            var jsonBody = await httpResponse.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<TResponse>(jsonBody);
+
+            return await UnwrapResponseAsync<TRequest, TResponse>(httpResponse, route);
         }
 
         public async Task<TResponse> PostAsync<TRequest, TResponse>(IHttpRequestWrapper<TRequest> request, CancellationToken token)
@@ -52,8 +54,7 @@ namespace HttpClient.Core.Service
                 await HandleFailResponseAsync(httpResponse);
             }
             
-            var jsonBody = await httpResponse.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<TResponse>(jsonBody);
+            return await UnwrapResponseAsync<TRequest, TResponse>(httpResponse, request.Endpoint);
         }
 
         public async Task PostAsync<TRequest>(string route, TRequest dto, CancellationToken token)
@@ -65,6 +66,15 @@ namespace HttpClient.Core.Service
             {
                 await HandleFailResponseAsync(httpResponse);
             }
+            _logger.LogTrace("Successfully posted {0} request to {1}", typeof(TRequest).Name, route);
+        }
+
+        private async Task<TResponse> UnwrapResponseAsync<TRequest, TResponse>(HttpResponseMessage responseMessage, string route)
+        {
+            var jsonBody = await responseMessage.Content.ReadAsStringAsync();
+            var deserializedResponse = JsonConvert.DeserializeObject<TResponse>(jsonBody);
+            _logger.LogTrace("Successfully deserialized HttpResponseMessage {0} from {1} matching request {2}", typeof(TResponse).Name, route, typeof(TRequest).Name);
+            return deserializedResponse;
         }
 
         private static async Task HandleFailResponseAsync(HttpResponseMessage httpResponse)
