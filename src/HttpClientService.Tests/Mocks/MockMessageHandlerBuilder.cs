@@ -48,6 +48,7 @@ namespace HttpClient.Tests.Mocks
 
         public MockMessageHandlerBuilder Build()
         {
+
             this.Protected()
                 .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
                 .ReturnsAsync(new HttpResponseMessage

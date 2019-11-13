@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -7,10 +8,13 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Blauhaus.Loggers.Common.Abstractions;
+using Blauhaus.Loggers.Common.Extensions;
 using HttpClient.Core.Config;
+using HttpClient.Core.Exceptions;
 using HttpClient.Core.Request;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Polly;
 using LogLevel = Blauhaus.Loggers.Common.Abstractions.LogLevel;
 
 namespace HttpClient.Core.Service
@@ -35,15 +39,18 @@ namespace HttpClient.Core.Service
 
         public async Task<TResponse> PostAsync<TRequest, TResponse>(string route, TRequest dto, CancellationToken token)
         {
+            var httpClient = GetClient();
             var httpContent = new StringContent(JsonConvert.SerializeObject(dto), new UTF8Encoding(), "application/json");
-            var httpResponse = await GetClient().PostAsync(route, httpContent, token);
 
-            if (!httpResponse.IsSuccessStatusCode)
+            var responseMessage = await TryExecuteAsync(t=> httpClient.PostAsync(route, httpContent, t), TimeSpan.FromSeconds(60), token);
+
+            if (responseMessage.IsSuccessStatusCode)
             {
-                await HandleFailResponseAsync(httpResponse);
+                return await UnwrapResponseAsync<TRequest, TResponse>(responseMessage, route);
             }
 
-            return await UnwrapResponseAsync<TRequest, TResponse>(httpResponse, route);
+            await HandleFailResponseAsync(responseMessage);
+            return default;
         }
 
         public async Task<TResponse> PostAsync<TRequest, TResponse>(IHttpRequestWrapper<TRequest> request, CancellationToken token)
@@ -51,8 +58,8 @@ namespace HttpClient.Core.Service
             var url = ExtractUrlFromWrapper(request);
             var httpContent = new StringContent(JsonConvert.SerializeObject(request.Request), new UTF8Encoding(), "application/json");
             var client = GetClient(request.RequestHeaders);
-            
-            var httpResponse = await client.PostAsync(url, httpContent, token);
+
+            var httpResponse = await TryExecuteAsync(t=> client.PostAsync(url, httpContent, t), TimeSpan.FromSeconds(60), token);
 
             if (!httpResponse.IsSuccessStatusCode)
             {
@@ -65,34 +72,78 @@ namespace HttpClient.Core.Service
         public async Task PostAsync<TRequest>(string route, TRequest dto, CancellationToken token)
         {
             var httpContent = new StringContent(JsonConvert.SerializeObject(dto), new UTF8Encoding(), "application/json");
-            var httpResponse = await GetClient().PostAsync(route, httpContent, token);
+            var httpClient = GetClient();
+            
+            var httpResponse = await TryExecuteAsync(t=> httpClient.PostAsync(route, httpContent, t), TimeSpan.FromSeconds(60), token);
 
             if (!httpResponse.IsSuccessStatusCode)
             {
                 await HandleFailResponseAsync(httpResponse);
             }
-            _logService.LogMessage(LogLevel.Trace, $"Successfully posted {typeof(TRequest).Name} request to {route}", null);
+        }
+
+        private async Task<HttpResponseMessage> TryExecuteAsync(Func<CancellationToken, Task<HttpResponseMessage>> task, TimeSpan timeout, CancellationToken cancellationToken)
+        {
+            return await Policy<HttpResponseMessage>
+                .Handle<TimeoutException>(ex =>
+                {
+                    _logService.Trace("Request Timed out");
+                    return true;
+                })
+                .WaitAndRetryAsync
+                (
+                    5,
+                    retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))
+                )
+                .ExecuteAsync(async () =>
+                {
+                    //httpclient throws TaskCanceled for timeouts and cancellations, so this method creates a custom timeout
+
+                    var cts = new CancellationTokenSource();
+                    cts.CancelAfter(timeout);
+                    var timeoutToken = cts.Token;
+
+                    var linkedToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutToken);
+
+                    try
+                    {
+                        return await task.Invoke(linkedToken.Token);
+                    }
+                    catch (OperationCanceledException) when (timeoutToken.IsCancellationRequested)
+                    {
+                        throw new TimeoutException();
+                    }
+                });
         }
 
         private async Task<TResponse> UnwrapResponseAsync<TRequest, TResponse>(HttpResponseMessage responseMessage, string route)
         {
             var jsonBody = await responseMessage.Content.ReadAsStringAsync();
             var deserializedResponse = JsonConvert.DeserializeObject<TResponse>(jsonBody);
-            _logService.LogMessage(LogLevel.Trace, $"Successfully posted {typeof(TRequest).Name} request to {route}", null);
+            _logService.LogMessage(LogLevel.Trace, $"Successfully posted {typeof(TRequest).Name} request to {route}");
             return deserializedResponse;
         }
 
-        private static async Task HandleFailResponseAsync(HttpResponseMessage httpResponse)
+        private async Task HandleFailResponseAsync(HttpResponseMessage httpResponse)
         {
-            if (httpResponse.StatusCode == HttpStatusCode.Unauthorized)
+            if (httpResponse.StatusCode == HttpStatusCode.Forbidden ||
+                httpResponse.StatusCode == HttpStatusCode.Unauthorized)
             {
-                throw new UnauthorizedAccessException();
+                _logService.Trace($"Client is not allowed to access this endpoint!");
+                throw new HttpClientServiceAuthorizationException(httpResponse.StatusCode, httpResponse.ReasonPhrase);
             }
 
             var message = await httpResponse.Content.ReadAsStringAsync();
             var error = JsonConvert.DeserializeObject<HttpError>(message);
-            var errorMessage = error == null ? string.Empty : error.Message;
-            throw new HttpClientServiceException(httpResponse.StatusCode, errorMessage);
+
+            if (error != null && string.IsNullOrEmpty(error.Message))
+            {
+                _logService.Trace($"Server returned an error: {error.Message}");
+                throw new HttpClientServiceServerError(httpResponse.StatusCode, error.Message);
+            }
+            _logService.Trace($"General http client exception: {httpResponse.StatusCode} ({httpResponse.ReasonPhrase})");
+            throw new HttpClientServiceException(httpResponse.StatusCode, httpResponse.ReasonPhrase);
+            
         }
 
         public void SetDefaultRequestHeader(string key, string value)
@@ -157,7 +208,7 @@ namespace HttpClient.Core.Service
 
         public void ClearAccessToken()
         {
-            _authHeader = new AuthenticationHeaderValue("Bearer", String.Empty);
+            _authHeader = new AuthenticationHeaderValue("Bearer", string.Empty);
         }
     }
 }
