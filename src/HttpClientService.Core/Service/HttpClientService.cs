@@ -6,10 +6,12 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Blauhaus.Loggers.Common.Abstractions;
 using HttpClient.Core.Config;
 using HttpClient.Core.Request;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using LogLevel = Blauhaus.Loggers.Common.Abstractions.LogLevel;
 
 namespace HttpClient.Core.Service
 {
@@ -17,15 +19,15 @@ namespace HttpClient.Core.Service
     {
         private readonly IHttpClientServiceConfig _config;
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly ILogger _logger;
+        private readonly ILogService _logService;
         private readonly Dictionary<string, string> _defaultRequestHeaders = new Dictionary<string, string>();
         private AuthenticationHeaderValue _authHeader;
 
-        public HttpClientService(IHttpClientServiceConfig config, IHttpClientFactory httpClientFactory, ILogger logger)
+        public HttpClientService(IHttpClientServiceConfig config, IHttpClientFactory httpClientFactory, ILogService logService)
         {
             _config = config;
             _httpClientFactory = httpClientFactory;
-            _logger = logger;
+            _logService = logService;
         }
 
         public async Task<TResponse> PostAsync<TRequest, TResponse>(string route, TRequest dto, CancellationToken token)
@@ -66,14 +68,14 @@ namespace HttpClient.Core.Service
             {
                 await HandleFailResponseAsync(httpResponse);
             }
-            _logger.LogTrace("Successfully posted {0} request to {1}", typeof(TRequest).Name, route);
+            _logService.LogMessage(LogLevel.Trace, $"Successfully posted {typeof(TRequest).Name} request to {route}", null);
         }
 
         private async Task<TResponse> UnwrapResponseAsync<TRequest, TResponse>(HttpResponseMessage responseMessage, string route)
         {
             var jsonBody = await responseMessage.Content.ReadAsStringAsync();
             var deserializedResponse = JsonConvert.DeserializeObject<TResponse>(jsonBody);
-            _logger.LogTrace("Successfully deserialized HttpResponseMessage {0} from {1} matching request {2}", typeof(TResponse).Name, route, typeof(TRequest).Name);
+            _logService.LogMessage(LogLevel.Trace, $"Successfully posted {typeof(TRequest).Name} request to {route}", null);
             return deserializedResponse;
         }
 
