@@ -23,7 +23,10 @@ namespace HttpClient.Core.Service
         private readonly Dictionary<string, string> _defaultRequestHeaders = new Dictionary<string, string>();
         private AuthenticationHeaderValue _authHeader;
 
-        public HttpClientService(IHttpClientServiceConfig config, IHttpClientFactory httpClientFactory, ILogService logService)
+        public HttpClientService(
+            IHttpClientServiceConfig config, 
+            IHttpClientFactory httpClientFactory, 
+            ILogService logService)
         {
             _config = config;
             _httpClientFactory = httpClientFactory;
