@@ -1,9 +1,9 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Blauhaus.Auth.Client.Service.Handlers;
-using HttpClient.Core.Request;
+using HttpClientService.Core.Request;
 
-namespace HttpClient.Core.Service
+namespace HttpClientService.Core.Service
 {
     public interface IHttpClientService : IAuthenticatedAccessTokenHandler
     {

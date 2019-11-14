@@ -2,7 +2,7 @@
 using Blauhaus.Tests.Helpers;
 using Moq;
 
-namespace HttpClient.Tests.Mocks
+namespace HttpClientService.Tests.Mocks
 {
     public class HttpClientFactoryMockBuilder : BaseMockBuilder<HttpClientFactoryMockBuilder, IHttpClientFactory>
     {

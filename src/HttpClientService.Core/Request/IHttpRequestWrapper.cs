@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace HttpClient.Core.Request
+namespace HttpClientService.Core.Request
 {
 
     public interface IHttpRequestWrapper<out TRequest> : IHttpRequestWrapper

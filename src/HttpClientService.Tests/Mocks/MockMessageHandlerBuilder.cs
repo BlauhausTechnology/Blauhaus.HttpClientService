@@ -8,7 +8,7 @@ using Moq;
 using Moq.Protected;
 using Newtonsoft.Json;
 
-namespace HttpClient.Tests.Mocks
+namespace HttpClientService.Tests.Mocks
 {
     public class MockMessageHandlerBuilder : Mock<HttpMessageHandler>
     {

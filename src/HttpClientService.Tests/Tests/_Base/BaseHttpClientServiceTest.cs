@@ -1,11 +1,10 @@
 ﻿using Blauhaus.Loggers.Common.Abstractions;
 using Blauhaus.Tests.Helpers;
-using HttpClient.Tests.Mocks;
-using Microsoft.Extensions.Logging;
+using HttpClientService.Tests.Mocks;
 using Moq;
 using NUnit.Framework;
 
-namespace HttpClient.Tests.Tests._Base
+namespace HttpClientService.Tests.Tests._Base
 {
     public class BaseHttpClientServiceTest : BaseUnitTest<Core.Service.HttpClientService>
     {

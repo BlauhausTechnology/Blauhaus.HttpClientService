@@ -1,7 +1,7 @@
 ﻿using Blauhaus.Tests.Helpers;
-using HttpClient.Core.Config;
+using HttpClientService.Core.Config;
 
-namespace HttpClient.Tests.Mocks
+namespace HttpClientService.Tests.Mocks
 {
     public class HttpClientServiceConfigMockBuilder : BaseMockBuilder<HttpClientServiceConfigMockBuilder, IHttpClientServiceConfig>
     {

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -9,15 +8,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using Blauhaus.Loggers.Common.Abstractions;
 using Blauhaus.Loggers.Common.Extensions;
-using HttpClient.Core.Config;
-using HttpClient.Core.Exceptions;
-using HttpClient.Core.Request;
-using Microsoft.Extensions.Logging;
+using HttpClientService.Core.Config;
+using HttpClientService.Core.Exceptions;
+using HttpClientService.Core.Request;
 using Newtonsoft.Json;
 using Polly;
 using LogLevel = Blauhaus.Loggers.Common.Abstractions.LogLevel;
 
-namespace HttpClient.Core.Service
+namespace HttpClientService.Core.Service
 {
     public class HttpClientService : IHttpClientService
     {

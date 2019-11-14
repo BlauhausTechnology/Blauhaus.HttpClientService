@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace HttpClient.Core.Request._Base
+namespace HttpClientService.Core.Request._Base
 {
     public abstract class BaseHttpRequestWrapper<TWrapper> : IHttpRequestWrapper where TWrapper : BaseHttpRequestWrapper<TWrapper>
     {

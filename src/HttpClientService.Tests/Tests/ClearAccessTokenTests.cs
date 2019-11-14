@@ -1,9 +1,9 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using HttpClient.Tests.Tests._Base;
+using HttpClientService.Tests.Tests._Base;
 using NUnit.Framework;
 
-namespace HttpClient.Tests.Tests
+namespace HttpClientService.Tests.Tests
 {
     public class ClearAccessTokenTests : BaseHttpClientServiceTest
     {

@@ -1,19 +1,15 @@
-using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using HttpClient.Core.Exceptions;
-using HttpClient.Core.Request;
-using HttpClient.Core.Service;
-using HttpClient.Tests.Mocks;
-using HttpClient.Tests.Tests._Base;
-using Moq;
-using Moq.Protected;
+using HttpClientService.Core.Exceptions;
+using HttpClientService.Core.Request;
+using HttpClientService.Core.Service;
+using HttpClientService.Tests.Tests._Base;
 using Newtonsoft.Json;
 using NUnit.Framework;
 
-namespace HttpClient.Tests.Tests
+namespace HttpClientService.Tests.Tests
 {
     public class PostAsyncTests : BaseHttpClientServiceTest
     {

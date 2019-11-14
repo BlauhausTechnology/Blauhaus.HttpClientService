@@ -1,6 +1,6 @@
-﻿using HttpClient.Core.Request._Base;
+﻿using HttpClientService.Core.Request._Base;
 
-namespace HttpClient.Core.Request
+namespace HttpClientService.Core.Request
 {
 
     public class HttpRequestWrapper<TRequest> : BaseHttpRequestWrapper<HttpRequestWrapper<TRequest>>, IHttpRequestWrapper<TRequest>

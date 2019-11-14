@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 
-namespace HttpClient.Core.Exceptions
+namespace HttpClientService.Core.Exceptions
 {
     public class HttpClientServiceException : Exception
     {
