@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HttpClientService.Core\HttpClientService.Core.csproj" />
+    <ProjectReference Include="..\Blauhaus.HttpClientService.Core\Blauhaus.HttpClientService.csproj" />
   </ItemGroup>
 
 </Project>

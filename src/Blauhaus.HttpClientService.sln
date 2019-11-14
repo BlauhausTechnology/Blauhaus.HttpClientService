@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29409.12
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpClientService.Core", "HttpClientService.Core\HttpClientService.Core.csproj", "{87C942BA-C21F-4D55-AA83-41BD03865265}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blauhaus.HttpClientService", "Blauhaus.HttpClientService.Core\Blauhaus.HttpClientService.csproj", "{87C942BA-C21F-4D55-AA83-41BD03865265}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpClientService.Tests", "HttpClientService.Tests\HttpClientService.Tests.csproj", "{8779F9DE-18E4-4AB3-ABDC-F8E15A378D33}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blauhaus.HttpClientService.Tests", "Blauhaus.HttpClientService.Tests\Blauhaus.HttpClientService.Tests.csproj", "{8779F9DE-18E4-4AB3-ABDC-F8E15A378D33}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
