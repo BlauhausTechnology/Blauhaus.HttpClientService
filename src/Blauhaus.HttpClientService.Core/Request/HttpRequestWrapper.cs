@@ -1,6 +1,6 @@
-﻿using HttpClientService.Core.Request._Base;
+﻿using Blauhaus.HttpClientService.Request._Base;
 
-namespace HttpClientService.Core.Request
+namespace Blauhaus.HttpClientService.Request
 {
 
     public class HttpRequestWrapper<TRequest> : BaseHttpRequestWrapper<HttpRequestWrapper<TRequest>>, IHttpRequestWrapper<TRequest>

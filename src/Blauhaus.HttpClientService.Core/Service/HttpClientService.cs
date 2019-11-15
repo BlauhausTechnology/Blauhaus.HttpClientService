@@ -6,16 +6,16 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Blauhaus.HttpClientService.Config;
+using Blauhaus.HttpClientService.Exceptions;
+using Blauhaus.HttpClientService.Request;
 using Blauhaus.Loggers.Common.Abstractions;
 using Blauhaus.Loggers.Common.Extensions;
-using HttpClientService.Core.Config;
-using HttpClientService.Core.Exceptions;
-using HttpClientService.Core.Request;
 using Newtonsoft.Json;
 using Polly;
 using LogLevel = Blauhaus.Loggers.Common.Abstractions.LogLevel;
 
-namespace HttpClientService.Core.Service
+namespace Blauhaus.HttpClientService.Service
 {
     public class HttpClientService : IHttpClientService
     {
@@ -85,7 +85,7 @@ namespace HttpClientService.Core.Service
             return await Policy<HttpResponseMessage>
                 .Handle<TimeoutException>(ex =>
                 {
-                    _logService.Trace("Request Timed out");
+                    //_logService.Trace("Request Timed out");
                     return true;
                 })
                 .WaitAndRetryAsync
@@ -118,7 +118,7 @@ namespace HttpClientService.Core.Service
         {
             var jsonBody = await responseMessage.Content.ReadAsStringAsync();
             var deserializedResponse = JsonConvert.DeserializeObject<TResponse>(jsonBody);
-            _logService.LogMessage(LogLevel.Trace, $"Successfully posted {typeof(TRequest).Name} request to {route}");
+            //_logService.LogMessage(LogLevel.Trace, $"Successfully posted {typeof(TRequest).Name} request to {route}");
             return deserializedResponse;
         }
 
@@ -127,7 +127,7 @@ namespace HttpClientService.Core.Service
             if (httpResponse.StatusCode == HttpStatusCode.Forbidden ||
                 httpResponse.StatusCode == HttpStatusCode.Unauthorized)
             {
-                _logService.Trace($"Client is not allowed to access this endpoint!");
+                //_logService.Trace($"Client is not allowed to access this endpoint!");
                 throw new HttpClientServiceAuthorizationException(httpResponse.StatusCode, httpResponse.ReasonPhrase);
             }
 
@@ -136,10 +136,10 @@ namespace HttpClientService.Core.Service
 
             if (error != null && string.IsNullOrEmpty(error.Message))
             {
-                _logService.Trace($"Server returned an error: {error.Message}");
+                //_logService.Trace($"Server returned an error: {error.Message}");
                 throw new HttpClientServiceServerError(httpResponse.StatusCode, error.Message);
             }
-            _logService.Trace($"General http client exception: {httpResponse.StatusCode} ({httpResponse.ReasonPhrase})");
+            //_logService.Trace($"General http client exception: {httpResponse.StatusCode} ({httpResponse.ReasonPhrase})");
             throw new HttpClientServiceException(httpResponse.StatusCode, httpResponse.ReasonPhrase);
             
         }
@@ -154,7 +154,7 @@ namespace HttpClientService.Core.Service
             _defaultRequestHeaders.Clear();
         }
 
-        private System.Net.Http.HttpClient GetClient(Dictionary<string, string> requestHeaders = null)
+        private HttpClient GetClient(Dictionary<string, string> requestHeaders = null)
         {
             var client = _httpClientFactory.CreateClient();
             client.Timeout =TimeSpan.FromSeconds(90);

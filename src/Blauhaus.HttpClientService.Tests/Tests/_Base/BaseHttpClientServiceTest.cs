@@ -1,12 +1,12 @@
-﻿using Blauhaus.Loggers.Common.Abstractions;
+﻿using Blauhaus.HttpClientService.Tests.Mocks;
+using Blauhaus.Loggers.Common.Abstractions;
 using Blauhaus.Tests.Helpers;
-using HttpClientService.Tests.Mocks;
 using Moq;
 using NUnit.Framework;
 
-namespace HttpClientService.Tests.Tests._Base
+namespace Blauhaus.HttpClientService.Tests.Tests._Base
 {
-    public class BaseHttpClientServiceTest : BaseUnitTest<Core.Service.HttpClientService>
+    public class BaseHttpClientServiceTest : BaseUnitTest<Service.HttpClientService>
     {
         protected HttpClientFactoryMockBuilder MockHttpClientFactory;
         protected MockMessageHandlerBuilder MockMessageHandler;
@@ -17,9 +17,9 @@ namespace HttpClientService.Tests.Tests._Base
             public string TestDtoProperty { get; set; }
         }
 
-        protected override Core.Service.HttpClientService ConstructSut()
+        protected override Service.HttpClientService ConstructSut()
         {
-            return new Core.Service.HttpClientService(MockClientServiceConfig.Object, MockHttpClientFactory.Object, Mock.Of<ILogService>());
+            return new Service.HttpClientService(MockClientServiceConfig.Object, MockHttpClientFactory.Object, Mock.Of<ILogService>());
         }
 
         [SetUp]

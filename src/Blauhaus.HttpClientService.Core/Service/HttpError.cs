@@ -1,4 +1,4 @@
-﻿namespace HttpClientService.Core.Service
+﻿namespace Blauhaus.HttpClientService.Service
 {
     public class HttpError
     {

@@ -1,9 +1,9 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using HttpClientService.Tests.Tests._Base;
+using Blauhaus.HttpClientService.Tests.Tests._Base;
 using NUnit.Framework;
 
-namespace HttpClientService.Tests.Tests
+namespace Blauhaus.HttpClientService.Tests.Tests
 {
     public class HandleAccessTokenTests : BaseHttpClientServiceTest
     {

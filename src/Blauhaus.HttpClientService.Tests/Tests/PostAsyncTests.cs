@@ -2,14 +2,14 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using HttpClientService.Core.Exceptions;
-using HttpClientService.Core.Request;
-using HttpClientService.Core.Service;
-using HttpClientService.Tests.Tests._Base;
+using Blauhaus.HttpClientService.Exceptions;
+using Blauhaus.HttpClientService.Request;
+using Blauhaus.HttpClientService.Service;
+using Blauhaus.HttpClientService.Tests.Tests._Base;
 using Newtonsoft.Json;
 using NUnit.Framework;
 
-namespace HttpClientService.Tests.Tests
+namespace Blauhaus.HttpClientService.Tests.Tests
 {
     public class PostAsyncTests : BaseHttpClientServiceTest
     {
