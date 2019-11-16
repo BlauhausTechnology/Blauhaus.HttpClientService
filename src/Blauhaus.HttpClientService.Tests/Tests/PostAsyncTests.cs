@@ -19,7 +19,7 @@ namespace Blauhaus.HttpClientService.Tests.Tests
             public async Task SHOULD_post_content_to_correct_endpoint()
             {
                 //Arrange
-                MockHttpClientFactory.Where_CreateClient_returns(new System.Net.Http.HttpClient(MockMessageHandler.Build().Object));
+                MockHttpClientFactory.Where_CreateClient_returns(new HttpClient(MockMessageHandler.Build().Object));
 
                 //Act
                 await Sut.PostAsync("http://baseaddress.com/testroute", new TestDto {TestDtoProperty = "hello world"}, CancellationToken.None);
@@ -33,7 +33,7 @@ namespace Blauhaus.HttpClientService.Tests.Tests
             public async Task SHOULD_post_using_Default_RequestHeaders()
             {
                 //Arrange
-                MockHttpClientFactory.Where_CreateClient_returns(new System.Net.Http.HttpClient(MockMessageHandler.Build().Object));
+                MockHttpClientFactory.Where_CreateClient_returns(new HttpClient(MockMessageHandler.Build().Object));
                 Sut.SetDefaultRequestHeader("frogs", "2");
                 Sut.SetDefaultRequestHeader("pudding", "yes please");
 
@@ -49,7 +49,7 @@ namespace Blauhaus.HttpClientService.Tests.Tests
             public void WHEN_post_fails_with_error_message_SHOULD_throw_message()
             {
                 //Arrange
-                MockHttpClientFactory.Where_CreateClient_returns(new System.Net.Http.HttpClient(MockMessageHandler
+                MockHttpClientFactory.Where_CreateClient_returns(new HttpClient(MockMessageHandler
                     .Where_SendAsync_returns_StatusCode(HttpStatusCode.BadRequest)
                     .Where_SendAsync_returns_Content(JsonConvert.SerializeObject(new HttpError
                     {
@@ -66,7 +66,7 @@ namespace Blauhaus.HttpClientService.Tests.Tests
             public void WHEN_post_fails_without_error_message_SHOULD_throw()
             {
                 //Arrange
-                MockHttpClientFactory.Where_CreateClient_returns(new System.Net.Http.HttpClient(MockMessageHandler
+                MockHttpClientFactory.Where_CreateClient_returns(new HttpClient(MockMessageHandler
                     .Where_SendAsync_returns_StatusCode(HttpStatusCode.FailedDependency)
                     .Where_SendAsync_returns_ReasonPhrase("Bad luck")
                     .Build().Object));
@@ -80,7 +80,7 @@ namespace Blauhaus.HttpClientService.Tests.Tests
             public void WHEN_post_returns_401_not_authorized_SHOULD_throw_UnauthorizedAccessException()
             {
                 //Arrange
-                MockHttpClientFactory.Where_CreateClient_returns(new System.Net.Http.HttpClient(MockMessageHandler
+                MockHttpClientFactory.Where_CreateClient_returns(new HttpClient(MockMessageHandler
                     .Where_SendAsync_returns_StatusCode(HttpStatusCode.Unauthorized)
                     .Where_SendAsync_returns_ReasonPhrase("Bad luck")
                     .Build().Object));
@@ -98,7 +98,7 @@ namespace Blauhaus.HttpClientService.Tests.Tests
             public async Task WHEN_TResponse_is_provided_SHOULD_post_content_to_correct_endpoint()
             {
                 //Arrange
-                MockHttpClientFactory.Where_CreateClient_returns(new System.Net.Http.HttpClient(MockMessageHandler.Build().Object));
+                MockHttpClientFactory.Where_CreateClient_returns(new HttpClient(MockMessageHandler.Build().Object));
 
                 //Act
                 await Sut.PostAsync<TestDto, TestDto>("http://baseaddress.com/testroute", new TestDto {TestDtoProperty = "hello world"}, CancellationToken.None);
@@ -113,7 +113,7 @@ namespace Blauhaus.HttpClientService.Tests.Tests
             public async Task WHEN_TResponse_is_provided_SHOULD_return_deserialized_dto()
             {
                 //Arrange
-                MockHttpClientFactory.Where_CreateClient_returns(new System.Net.Http.HttpClient(MockMessageHandler
+                MockHttpClientFactory.Where_CreateClient_returns(new HttpClient(MockMessageHandler
                     .Where_SendAsync_returns_Content(JsonConvert.SerializeObject(new TestDto {TestDtoProperty = "Hello back"}))
                     .Build().Object));
 
@@ -128,7 +128,7 @@ namespace Blauhaus.HttpClientService.Tests.Tests
             public void WHEN_TResponse_is_provided_WHEN_post_fails_SHOULD_throw()
             {
                 //Arrange
-                MockHttpClientFactory.Where_CreateClient_returns(new System.Net.Http.HttpClient(MockMessageHandler
+                MockHttpClientFactory.Where_CreateClient_returns(new HttpClient(MockMessageHandler
                     .Where_SendAsync_returns_StatusCode(HttpStatusCode.BadRequest)
                     .Where_SendAsync_returns_Content(JsonConvert.SerializeObject(new HttpError
                     {
@@ -146,7 +146,7 @@ namespace Blauhaus.HttpClientService.Tests.Tests
             public void WHEN_post_fails_without_error_message_SHOULD_throw()
             {
                 //Arrange
-                MockHttpClientFactory.Where_CreateClient_returns(new System.Net.Http.HttpClient(MockMessageHandler
+                MockHttpClientFactory.Where_CreateClient_returns(new HttpClient(MockMessageHandler
                     .Where_SendAsync_returns_StatusCode(HttpStatusCode.FailedDependency)
                     .Where_SendAsync_returns_ReasonPhrase("Bad luck")
                     .Build().Object));
@@ -160,7 +160,7 @@ namespace Blauhaus.HttpClientService.Tests.Tests
             public void WHEN_TResponse_is_provided_and_post_returns_401_not_authorized_SHOULD_throw_UnauthorizedAccessException()
             {
                 //Arrange
-                MockHttpClientFactory.Where_CreateClient_returns(new System.Net.Http.HttpClient(MockMessageHandler
+                MockHttpClientFactory.Where_CreateClient_returns(new HttpClient(MockMessageHandler
                     .Where_SendAsync_returns_StatusCode(HttpStatusCode.Unauthorized)
                     .Where_SendAsync_returns_ReasonPhrase("Bad luck")
                     .Build().Object));
@@ -178,7 +178,7 @@ namespace Blauhaus.HttpClientService.Tests.Tests
             {
                 //Arrange
                 var wrapper = new HttpRequestWrapper<TestDto>("http://baseaddress.com/testroute", new TestDto {TestDtoProperty = "hello world"});
-                MockHttpClientFactory.Where_CreateClient_returns(new System.Net.Http.HttpClient(MockMessageHandler.Build().Object));
+                MockHttpClientFactory.Where_CreateClient_returns(new HttpClient(MockMessageHandler.Build().Object));
 
                 //Act
                 await Sut.PostAsync<TestDto, TestDto>(wrapper, CancellationToken.None);
@@ -196,7 +196,7 @@ namespace Blauhaus.HttpClientService.Tests.Tests
                 var wrapper = new HttpRequestWrapper<TestDto>("http://baseaddress.com/testroute", new TestDto {TestDtoProperty = "hello world"})
                     .WithQueryStringParameter("userId", "123")
                     .WithQueryStringParameter("name", "Bob");
-                MockHttpClientFactory.Where_CreateClient_returns(new System.Net.Http.HttpClient(MockMessageHandler.Build().Object));
+                MockHttpClientFactory.Where_CreateClient_returns(new HttpClient(MockMessageHandler.Build().Object));
 
                 //Act
                 await Sut.PostAsync<TestDto, TestDto>(wrapper, CancellationToken.None);
@@ -212,7 +212,7 @@ namespace Blauhaus.HttpClientService.Tests.Tests
                 var wrapper = new HttpRequestWrapper<TestDto>("http://baseaddress.com/testroute", new TestDto {TestDtoProperty = "hello world"})
                     .WithRequestHeader("userId", "123")
                     .WithRequestHeader("name", "Bob");
-                MockHttpClientFactory.Where_CreateClient_returns(new System.Net.Http.HttpClient(MockMessageHandler.Build().Object));
+                MockHttpClientFactory.Where_CreateClient_returns(new HttpClient(MockMessageHandler.Build().Object));
 
                 //Act
                 await Sut.PostAsync<TestDto, TestDto>(wrapper, CancellationToken.None);
@@ -227,7 +227,7 @@ namespace Blauhaus.HttpClientService.Tests.Tests
             {
                 //Arrange
                 var wrapper = new HttpRequestWrapper<TestDto>("http://baseaddress.com/testroute", new TestDto {TestDtoProperty = "hello world"});
-                MockHttpClientFactory.Where_CreateClient_returns(new System.Net.Http.HttpClient(MockMessageHandler
+                MockHttpClientFactory.Where_CreateClient_returns(new HttpClient(MockMessageHandler
                     .Where_SendAsync_returns_Content(JsonConvert.SerializeObject(new TestDto {TestDtoProperty = "Hello back"}))
                     .Build().Object));
 
@@ -243,7 +243,7 @@ namespace Blauhaus.HttpClientService.Tests.Tests
             {
                 //Arrange
                 var wrapper = new HttpRequestWrapper<TestDto>("http://baseaddress.com/testroute", new TestDto {TestDtoProperty = "hello world"});
-                MockHttpClientFactory.Where_CreateClient_returns(new System.Net.Http.HttpClient(MockMessageHandler
+                MockHttpClientFactory.Where_CreateClient_returns(new HttpClient(MockMessageHandler
                     .Where_SendAsync_returns_StatusCode(HttpStatusCode.BadRequest)
                     .Where_SendAsync_returns_Content(JsonConvert.SerializeObject(new HttpError
                     {
@@ -261,7 +261,7 @@ namespace Blauhaus.HttpClientService.Tests.Tests
             {
                 //Arrange
                 var wrapper = new HttpRequestWrapper<TestDto>("http://baseaddress.com/testroute", new TestDto {TestDtoProperty = "hello world"});
-                MockHttpClientFactory.Where_CreateClient_returns(new System.Net.Http.HttpClient(MockMessageHandler
+                MockHttpClientFactory.Where_CreateClient_returns(new HttpClient(MockMessageHandler
                     .Where_SendAsync_returns_StatusCode(HttpStatusCode.FailedDependency)
                     .Where_SendAsync_returns_ReasonPhrase("Bad luck")
                     .Build().Object));
@@ -277,7 +277,7 @@ namespace Blauhaus.HttpClientService.Tests.Tests
             {
                 //Arrange
                 var wrapper = new HttpRequestWrapper<TestDto>("http://baseaddress.com/testroute", new TestDto {TestDtoProperty = "hello world"});
-                MockHttpClientFactory.Where_CreateClient_returns(new System.Net.Http.HttpClient(MockMessageHandler
+                MockHttpClientFactory.Where_CreateClient_returns(new HttpClient(MockMessageHandler
                     .Where_SendAsync_returns_StatusCode(HttpStatusCode.Unauthorized)
                     .Where_SendAsync_returns_ReasonPhrase("Bad luck")
                     .Build().Object));

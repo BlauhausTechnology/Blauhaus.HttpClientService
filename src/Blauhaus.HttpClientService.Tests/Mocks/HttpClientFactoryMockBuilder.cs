@@ -7,7 +7,7 @@ namespace Blauhaus.HttpClientService.Tests.Mocks
     public class HttpClientFactoryMockBuilder : BaseMockBuilder<HttpClientFactoryMockBuilder, IHttpClientFactory>
     {
 
-        public HttpClientFactoryMockBuilder Where_CreateClient_returns(System.Net.Http.HttpClient client)
+        public HttpClientFactoryMockBuilder Where_CreateClient_returns(HttpClient client)
         {
             Mock.Setup(x => x.CreateClient(It.IsAny<string>()))
                 .Returns(client);
