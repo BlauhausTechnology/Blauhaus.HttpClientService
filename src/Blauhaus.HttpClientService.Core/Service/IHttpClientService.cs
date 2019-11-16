@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Blauhaus.Auth.Client.Service.Handlers;
+using Blauhaus.Auth.Abstractions.ClientAuthenticationHandlers;
 using Blauhaus.HttpClientService.Request;
 
 namespace Blauhaus.HttpClientService.Service
