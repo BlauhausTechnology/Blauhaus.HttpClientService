@@ -35,6 +35,8 @@ namespace Blauhaus.HttpClientService.Service
             _logService = logService;
         }
 
+
+
         public async Task<TResponse> PostAsync<TRequest, TResponse>(string route, TRequest dto, CancellationToken token)
         {
             var httpClient = GetClient();
@@ -44,7 +46,7 @@ namespace Blauhaus.HttpClientService.Service
 
             if (responseMessage.IsSuccessStatusCode)
             {
-                return await UnwrapResponseAsync<TRequest, TResponse>(responseMessage, route);
+                return await UnwrapResponseAsync<TResponse>(responseMessage);
             }
 
             await HandleFailResponseAsync(responseMessage);
@@ -64,7 +66,7 @@ namespace Blauhaus.HttpClientService.Service
                 await HandleFailResponseAsync(httpResponse);
             }
             
-            return await UnwrapResponseAsync<TRequest, TResponse>(httpResponse, request.Endpoint);
+            return await UnwrapResponseAsync<TResponse>(httpResponse);
         }
 
         public async Task PostAsync<TRequest>(string route, TRequest dto, CancellationToken token)
@@ -78,6 +80,53 @@ namespace Blauhaus.HttpClientService.Service
             {
                 await HandleFailResponseAsync(httpResponse);
             }
+        }
+
+        public  async Task<TResponse> PatchAsync<TRequest, TResponse>(IHttpRequestWrapper<TRequest> request, CancellationToken token)
+        {
+            var url = ExtractUrlFromWrapper(request);
+            var httpContent = new StringContent(JsonConvert.SerializeObject(request.Request), new UTF8Encoding(), "application/json");
+            var requestMessage = new HttpRequestMessage(new HttpMethod("PATCH"), url) {Content = httpContent};
+            var client = GetClient(request.RequestHeaders);
+
+            var httpResponse = await TryExecuteAsync(t=> client.SendAsync(requestMessage, t), TimeSpan.FromSeconds(60), token);
+
+            if (!httpResponse.IsSuccessStatusCode)
+            {
+                await HandleFailResponseAsync(httpResponse);
+            }
+            
+            return await UnwrapResponseAsync<TResponse>(httpResponse);
+        }
+
+        public async Task<TResponse> GetAsync<TResponse>(IHttpRequestWrapper request, CancellationToken token)
+        {
+            var url = ExtractUrlFromWrapper(request);
+            var client = GetClient(request.RequestHeaders);
+
+            var httpResponse = await TryExecuteAsync(t => client.GetAsync(url, t), TimeSpan.FromSeconds(60), token);
+
+            if (!httpResponse.IsSuccessStatusCode)
+            {
+                await HandleFailResponseAsync(httpResponse);
+            }
+            
+            return await UnwrapResponseAsync<TResponse>(httpResponse);
+        }
+
+        public async Task<TResponse> DeleteAsync<TResponse>(IHttpRequestWrapper request, CancellationToken token)
+        {
+            var url = ExtractUrlFromWrapper(request);
+            var client = GetClient(request.RequestHeaders);
+
+            var httpResponse = await TryExecuteAsync(t => client.DeleteAsync(url, t), TimeSpan.FromSeconds(60), token);
+
+            if (!httpResponse.IsSuccessStatusCode)
+            {
+                await HandleFailResponseAsync(httpResponse);
+            }
+            
+            return await UnwrapResponseAsync<TResponse>(httpResponse);
         }
 
         private async Task<HttpResponseMessage> TryExecuteAsync(Func<CancellationToken, Task<HttpResponseMessage>> task, TimeSpan timeout, CancellationToken cancellationToken)
@@ -114,11 +163,10 @@ namespace Blauhaus.HttpClientService.Service
                 });
         }
 
-        private async Task<TResponse> UnwrapResponseAsync<TRequest, TResponse>(HttpResponseMessage responseMessage, string route)
+        private async Task<TResponse> UnwrapResponseAsync<TResponse>(HttpResponseMessage responseMessage)
         {
             var jsonBody = await responseMessage.Content.ReadAsStringAsync();
             var deserializedResponse = JsonConvert.DeserializeObject<TResponse>(jsonBody);
-            //_logService.LogMessage(LogLevel.Trace, $"Successfully posted {typeof(TRequest).Name} request to {route}");
             return deserializedResponse;
         }
 

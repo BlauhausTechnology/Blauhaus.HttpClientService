@@ -14,6 +14,10 @@ namespace Blauhaus.HttpClientService.Request
         public TRequest Request { get; }
     }
 
-
-   
+    public class HttpRequestWrapper : BaseHttpRequestWrapper<HttpRequestWrapper>
+    {
+        public HttpRequestWrapper(string endpoint) : base(endpoint)
+        {
+        }
+    }
 }

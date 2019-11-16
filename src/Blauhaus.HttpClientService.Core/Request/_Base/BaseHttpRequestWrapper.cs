@@ -2,7 +2,12 @@
 
 namespace Blauhaus.HttpClientService.Request._Base
 {
-    public abstract class BaseHttpRequestWrapper<TWrapper> : IHttpRequestWrapper where TWrapper : BaseHttpRequestWrapper<TWrapper>
+
+
+
+
+    public abstract class BaseHttpRequestWrapper<TWrapper> : IHttpRequestWrapper 
+        where TWrapper : BaseHttpRequestWrapper<TWrapper>
     {
         protected BaseHttpRequestWrapper(string endpoint)
         {
