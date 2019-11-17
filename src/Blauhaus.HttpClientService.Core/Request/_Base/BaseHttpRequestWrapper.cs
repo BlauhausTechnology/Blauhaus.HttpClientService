@@ -30,9 +30,9 @@ namespace Blauhaus.HttpClientService.Request._Base
             return this as TWrapper;
         }
 
-        public TWrapper WithAuthorizationHeader(string token, string scheme = "Bearer")
+        public TWrapper WithAuthorizationHeader(string scheme, string token)
         {
-            AuthorizationHeader = new KeyValuePair<string, string>(token, scheme);
+            AuthorizationHeader = new KeyValuePair<string, string>(scheme, token);
             return this as TWrapper;
         }
 
