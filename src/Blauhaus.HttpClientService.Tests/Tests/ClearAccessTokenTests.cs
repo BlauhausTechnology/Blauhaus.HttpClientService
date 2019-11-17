@@ -7,19 +7,19 @@ namespace Blauhaus.HttpClientService.Tests.Tests
 {
     public class ClearAccessTokenTests : BaseHttpClientServiceTest
     {
-        [Test]
-        public async Task SHOULD_remove_bearer_token_from_requests()
-        {
-            //Arrange
-            MockHttpClientFactory.Where_CreateClient_returns(new System.Net.Http.HttpClient(MockMessageHandler.Build().Object));
-            Sut.HandleAccessToken("authToken");
+        //[Test]
+        //public async Task SHOULD_remove_bearer_token_from_requests()
+        //{
+        //    //Arrange
+        //    MockHttpClientFactory.Where_CreateClient_returns(new System.Net.Http.HttpClient(MockMessageHandler.Build().Object));
+        //    Sut.HandleAccessToken("authToken");
 
-            //Act
-            Sut.ClearAccessToken();
+        //    //Act
+        //    Sut.ClearAccessToken();
 
-            //Assert
-            await Sut.PostAsync("http://www.google.com/", new TestDto(), CancellationToken.None);
-            MockMessageHandler.VerifyAuthHeader("Bearer", "authToken", 0);
-        }
+        //    //Assert
+        //    await Sut.PostAsync("http://www.google.com/", new TestDto(), CancellationToken.None);
+        //    MockMessageHandler.VerifyAuthHeader("Bearer", "authToken", 0);
+        //}
     }
 }

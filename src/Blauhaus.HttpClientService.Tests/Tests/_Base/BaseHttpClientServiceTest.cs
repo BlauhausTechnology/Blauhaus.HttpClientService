@@ -12,10 +12,7 @@ namespace Blauhaus.HttpClientService.Tests.Tests._Base
         protected MockMessageHandlerBuilder MockMessageHandler;
         protected HttpClientServiceConfigMockBuilder MockClientServiceConfig;
 
-        protected class TestDto 
-        {
-            public string TestDtoProperty { get; set; }
-        }
+       
 
         protected override Service.HttpClientService ConstructSut()
         {

@@ -39,7 +39,7 @@ namespace Blauhaus.HttpClientService.Service
 
         public async Task<TResponse> PostAsync<TRequest, TResponse>(string route, TRequest dto, CancellationToken token)
         {
-            var httpClient = GetClient();
+            var httpClient = GetClient(new Dictionary<string, string>(), new KeyValuePair<string, string>());
             var httpContent = new StringContent(JsonConvert.SerializeObject(dto), new UTF8Encoding(), "application/json");
 
             var responseMessage = await TryExecuteAsync(t=> httpClient.PostAsync(route, httpContent, t), TimeSpan.FromSeconds(60), token);
@@ -57,7 +57,7 @@ namespace Blauhaus.HttpClientService.Service
         {
             var url = ExtractUrlFromWrapper(request);
             var httpContent = new StringContent(JsonConvert.SerializeObject(request.Request), new UTF8Encoding(), "application/json");
-            var client = GetClient(request.RequestHeaders);
+            var client = GetClient(request.RequestHeaders, request.AuthorizationHeader);
 
             var httpResponse = await TryExecuteAsync(t=> client.PostAsync(url, httpContent, t), TimeSpan.FromSeconds(60), token);
 
@@ -72,7 +72,7 @@ namespace Blauhaus.HttpClientService.Service
         public async Task PostAsync<TRequest>(string route, TRequest dto, CancellationToken token)
         {
             var httpContent = new StringContent(JsonConvert.SerializeObject(dto), new UTF8Encoding(), "application/json");
-            var httpClient = GetClient();
+            var httpClient = GetClient(new Dictionary<string, string>(), new KeyValuePair<string, string>());
             
             var httpResponse = await TryExecuteAsync(t=> httpClient.PostAsync(route, httpContent, t), TimeSpan.FromSeconds(60), token);
 
@@ -87,7 +87,7 @@ namespace Blauhaus.HttpClientService.Service
             var url = ExtractUrlFromWrapper(request);
             var httpContent = new StringContent(JsonConvert.SerializeObject(request.Request), new UTF8Encoding(), "application/json");
             var requestMessage = new HttpRequestMessage(new HttpMethod("PATCH"), url) {Content = httpContent};
-            var client = GetClient(request.RequestHeaders);
+            var client = GetClient(request.RequestHeaders, request.AuthorizationHeader);
 
             var httpResponse = await TryExecuteAsync(t=> client.SendAsync(requestMessage, t), TimeSpan.FromSeconds(60), token);
 
@@ -102,7 +102,7 @@ namespace Blauhaus.HttpClientService.Service
         public async Task<TResponse> GetAsync<TResponse>(IHttpRequestWrapper request, CancellationToken token)
         {
             var url = ExtractUrlFromWrapper(request);
-            var client = GetClient(request.RequestHeaders);
+            var client = GetClient(request.RequestHeaders, request.AuthorizationHeader);
 
             var httpResponse = await TryExecuteAsync(t => client.GetAsync(url, t), TimeSpan.FromSeconds(60), token);
 
@@ -117,7 +117,7 @@ namespace Blauhaus.HttpClientService.Service
         public async Task<TResponse> DeleteAsync<TResponse>(IHttpRequestWrapper request, CancellationToken token)
         {
             var url = ExtractUrlFromWrapper(request);
-            var client = GetClient(request.RequestHeaders);
+            var client = GetClient(request.RequestHeaders, request.AuthorizationHeader);
 
             var httpResponse = await TryExecuteAsync(t => client.DeleteAsync(url, t), TimeSpan.FromSeconds(60), token);
 
@@ -163,6 +163,29 @@ namespace Blauhaus.HttpClientService.Service
                 });
         }
 
+        public void HandleAccessToken(string scheme, string authenticatedAccessToken)
+        {
+            _authHeader = new AuthenticationHeaderValue(scheme, authenticatedAccessToken);
+        }
+
+        public void ClearAccessToken()
+        {
+            _authHeader = new AuthenticationHeaderValue("Bearer", string.Empty);
+        }
+        
+        public void SetDefaultRequestHeader(string key, string value)
+        {
+            _defaultRequestHeaders[key] = value;
+        }
+
+        public void ClearDefaultRequestHeaders()
+        {
+            _defaultRequestHeaders.Clear();
+        }
+        
+
+        #region Privates
+        
         private async Task<TResponse> UnwrapResponseAsync<TResponse>(HttpResponseMessage responseMessage)
         {
             var jsonBody = await responseMessage.Content.ReadAsStringAsync();
@@ -192,17 +215,8 @@ namespace Blauhaus.HttpClientService.Service
             
         }
 
-        public void SetDefaultRequestHeader(string key, string value)
-        {
-            _defaultRequestHeaders[key] = value;
-        }
 
-        public void ClearDefaultRequestHeaders()
-        {
-            _defaultRequestHeaders.Clear();
-        }
-
-        private HttpClient GetClient(Dictionary<string, string> requestHeaders = null)
+        private HttpClient GetClient(Dictionary<string, string> requestHeaders, KeyValuePair<string, string> authorizationHeader)
         {
             var client = _httpClientFactory.CreateClient();
             client.Timeout =TimeSpan.FromSeconds(90);
@@ -224,7 +238,9 @@ namespace Blauhaus.HttpClientService.Service
                 }
             }
 
-            client.DefaultRequestHeaders.Authorization = _authHeader;
+            client.DefaultRequestHeaders.Authorization = string.IsNullOrEmpty(authorizationHeader.Key) 
+                ? _authHeader 
+                : new AuthenticationHeaderValue(authorizationHeader.Key, authorizationHeader.Value);
             
             return client;
         }
@@ -246,15 +262,7 @@ namespace Blauhaus.HttpClientService.Service
             return url.ToString();
         }
 
-        public void HandleAccessToken(string authenticatedAccessToken)
-        {
-            _authHeader = new AuthenticationHeaderValue("Bearer", authenticatedAccessToken);
-        }
 
-
-        public void ClearAccessToken()
-        {
-            _authHeader = new AuthenticationHeaderValue("Bearer", string.Empty);
-        }
+        #endregion
     }
 }
