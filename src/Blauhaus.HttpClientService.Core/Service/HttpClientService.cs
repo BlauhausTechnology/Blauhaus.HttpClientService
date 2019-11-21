@@ -128,8 +128,15 @@ namespace Blauhaus.HttpClientService.Service
             
             return await UnwrapResponseAsync<TResponse>(httpResponse);
         }
-
+        
         private async Task<HttpResponseMessage> TryExecuteAsync(Func<CancellationToken, Task<HttpResponseMessage>> task, TimeSpan timeout, CancellationToken cancellationToken)
+        {
+            return await task.Invoke(cancellationToken);
+        }
+
+        //this is not used for now because it throws cancelled exceptions out and i don't know what type of HttpResponse message to return if the task is cancelled
+        //too fucking complicated
+        private async Task<HttpResponseMessage> TryExecuteWithTimeoutHandlerAsync(Func<CancellationToken, Task<HttpResponseMessage>> task, TimeSpan timeout, CancellationToken cancellationToken)
         {
             return await Policy<HttpResponseMessage>
                 .Handle<TimeoutException>(ex =>
