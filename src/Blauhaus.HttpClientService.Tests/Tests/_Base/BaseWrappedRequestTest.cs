@@ -135,7 +135,7 @@ namespace Blauhaus.HttpClientService.Tests.Tests._Base
                 .Build().Object));
 
             //Assert
-            Assert.ThrowsAsync<HttpClientServiceException>(async () =>
+            Assert.ThrowsAsync<HttpClientServiceServerError>(async () =>
                 await ExecuteAsync(wrapper, CancellationToken.None), "bad luck");
         }
 

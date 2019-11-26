@@ -212,7 +212,7 @@ namespace Blauhaus.HttpClientService.Service
             var message = await httpResponse.Content.ReadAsStringAsync();
             var error = JsonConvert.DeserializeObject<HttpError>(message);
 
-            if (error != null && string.IsNullOrEmpty(error.Message))
+            if (error != null && !string.IsNullOrEmpty(error.Message))
             {
                 //_logService.Trace($"Server returned an error: {error.Message}");
                 throw new HttpClientServiceServerError(httpResponse.StatusCode, error.Message);

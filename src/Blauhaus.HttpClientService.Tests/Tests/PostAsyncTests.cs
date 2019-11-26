@@ -59,7 +59,7 @@ namespace Blauhaus.HttpClientService.Tests.Tests
                     .Build().Object));
 
                 //Assert
-                Assert.ThrowsAsync<HttpClientServiceException>(async () =>
+                Assert.ThrowsAsync<HttpClientServiceServerError>(async () =>
                     await Sut.PostAsync("http://baseaddress.com/testroute", new TestDto {TestDtoProperty = "hello world"}, CancellationToken.None), "bad luck");
             }
 
@@ -138,7 +138,7 @@ namespace Blauhaus.HttpClientService.Tests.Tests
                     .Build().Object));
 
                 //Assert
-                Assert.ThrowsAsync<HttpClientServiceException>(async () =>
+                Assert.ThrowsAsync<HttpClientServiceServerError>(async () =>
                     await Sut.PostAsync<TestDto, TestDto>("http://baseaddress.com/testroute", new TestDto {TestDtoProperty = "hello world"},
                         CancellationToken.None), "bad luck");
             }
