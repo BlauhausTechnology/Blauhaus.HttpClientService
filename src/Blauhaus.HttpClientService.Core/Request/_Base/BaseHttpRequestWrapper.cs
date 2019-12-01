@@ -24,7 +24,7 @@ namespace Blauhaus.HttpClientService.Request._Base
         {
             get
             {
-                var url = new StringBuilder(request.Endpoint);
+                var url = new StringBuilder(Endpoint);
                 if (QueryStringParameters.Count > 0)
                 {
                     url.Append("?");
