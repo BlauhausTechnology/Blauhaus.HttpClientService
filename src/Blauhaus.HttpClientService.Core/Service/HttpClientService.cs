@@ -55,11 +55,10 @@ namespace Blauhaus.HttpClientService.Service
 
         public async Task<TResponse> PostAsync<TRequest, TResponse>(IHttpRequestWrapper<TRequest> request, CancellationToken token)
         {
-            var url = ExtractUrlFromWrapper(request);
             var httpContent = new StringContent(JsonConvert.SerializeObject(request.Request), new UTF8Encoding(), "application/json");
             var client = GetClient(request.RequestHeaders, request.AuthorizationHeader);
 
-            var httpResponse = await TryExecuteAsync(t=> client.PostAsync(url, httpContent, t), TimeSpan.FromSeconds(60), token);
+            var httpResponse = await TryExecuteAsync(t=> client.PostAsync(request.Url, httpContent, t), TimeSpan.FromSeconds(60), token);
 
             if (!httpResponse.IsSuccessStatusCode)
             {
@@ -84,9 +83,8 @@ namespace Blauhaus.HttpClientService.Service
 
         public  async Task<TResponse> PatchAsync<TRequest, TResponse>(IHttpRequestWrapper<TRequest> request, CancellationToken token)
         {
-            var url = ExtractUrlFromWrapper(request);
             var httpContent = new StringContent(JsonConvert.SerializeObject(request.Request), new UTF8Encoding(), "application/json");
-            var requestMessage = new HttpRequestMessage(new HttpMethod("PATCH"), url) {Content = httpContent};
+            var requestMessage = new HttpRequestMessage(new HttpMethod("PATCH"), request.Url) {Content = httpContent};
             var client = GetClient(request.RequestHeaders, request.AuthorizationHeader);
 
             var httpResponse = await TryExecuteAsync(t=> client.SendAsync(requestMessage, t), TimeSpan.FromSeconds(60), token);
@@ -101,10 +99,9 @@ namespace Blauhaus.HttpClientService.Service
 
         public async Task<TResponse> GetAsync<TResponse>(IHttpRequestWrapper request, CancellationToken token)
         {
-            var url = ExtractUrlFromWrapper(request);
             var client = GetClient(request.RequestHeaders, request.AuthorizationHeader);
 
-            var httpResponse = await TryExecuteAsync(t => client.GetAsync(url, t), TimeSpan.FromSeconds(60), token);
+            var httpResponse = await TryExecuteAsync(t => client.GetAsync(request.Url, t), TimeSpan.FromSeconds(60), token);
 
             if (!httpResponse.IsSuccessStatusCode)
             {
@@ -116,10 +113,9 @@ namespace Blauhaus.HttpClientService.Service
 
         public async Task<TResponse> DeleteAsync<TResponse>(IHttpRequestWrapper request, CancellationToken token)
         {
-            var url = ExtractUrlFromWrapper(request);
             var client = GetClient(request.RequestHeaders, request.AuthorizationHeader);
 
-            var httpResponse = await TryExecuteAsync(t => client.DeleteAsync(url, t), TimeSpan.FromSeconds(60), token);
+            var httpResponse = await TryExecuteAsync(t => client.DeleteAsync(request.Url, t), TimeSpan.FromSeconds(60), token);
 
             if (!httpResponse.IsSuccessStatusCode)
             {
@@ -252,22 +248,6 @@ namespace Blauhaus.HttpClientService.Service
             return client;
         }
         
-        private static string ExtractUrlFromWrapper(IHttpRequestWrapper request)
-        {
-            var url = new StringBuilder(request.Endpoint);
-            if (request.QueryStringParameters.Count > 0)
-            {
-                url.Append("?");
-                foreach (var parameter in request.QueryStringParameters)
-                {
-                    url.Append(parameter.Key).Append("=").Append(parameter.Value).Append("&");
-                }
-
-                url.Length -= 1;
-            }
-
-            return url.ToString();
-        }
 
 
         #endregion

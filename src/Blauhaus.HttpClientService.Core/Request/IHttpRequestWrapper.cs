@@ -14,5 +14,7 @@ namespace Blauhaus.HttpClientService.Request
         KeyValuePair<string, string> AuthorizationHeader { get; } 
         Dictionary<string, string> RequestHeaders { get; }
         Dictionary<string, string> QueryStringParameters { get; }
+
+        string Url { get; }
     }
 }
