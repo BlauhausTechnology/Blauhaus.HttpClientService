@@ -1,5 +1,5 @@
 ﻿using System.Net.Http;
-using Blauhaus.Tests.Helpers;
+using Blauhaus.Common.TestHelpers;
 using Moq;
 
 namespace Blauhaus.HttpClientService.Tests.Mocks

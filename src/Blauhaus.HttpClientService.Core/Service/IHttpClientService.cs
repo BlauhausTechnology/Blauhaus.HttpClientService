@@ -6,11 +6,11 @@ using Blauhaus.HttpClientService.Request;
 
 namespace Blauhaus.HttpClientService.Service
 {
-    public interface IHttpClientService : IAuthenticatedAccessTokenHandler
+    public interface IHttpClientService
     {
-        [Obsolete("User IHttpRequestWrapper instead")]
+        [Obsolete("Use IHttpRequestWrapper instead")]
         Task<TResponse> PostAsync<TRequest, TResponse>(string route, TRequest request, CancellationToken token);
-        [Obsolete("User IHttpRequestWrapper instead")]
+        [Obsolete("Use IHttpRequestWrapper instead")]
         Task PostAsync<TRequest>(string route, TRequest request, CancellationToken token);
         
         Task<TResponse> PostAsync<TRequest, TResponse>(IHttpRequestWrapper<TRequest> request, CancellationToken token);

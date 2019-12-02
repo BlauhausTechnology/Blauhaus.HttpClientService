@@ -72,7 +72,9 @@ namespace Blauhaus.HttpClientService.Tests.Tests._Base
             var wrapper = GetWrapper();
             Sut.SetDefaultRequestHeader("userId", "123");
             Sut.SetDefaultRequestHeader("name", "Bob");
-            Sut.HandleAccessToken("Bearer", "bearerToken");
+            MockAccessToken
+                .With(x => x.Scheme, "Bearer")
+                .With(x => x.Token, "bearerToken");
             MockHttpClientFactory.Where_CreateClient_returns(new HttpClient(MockMessageHandler.Build().Object));
 
             //Act
@@ -91,18 +93,22 @@ namespace Blauhaus.HttpClientService.Tests.Tests._Base
             var wrapper = GetWrapper();
             Sut.SetDefaultRequestHeader("userId", "123");
             Sut.SetDefaultRequestHeader("name", "Bob");
-            Sut.HandleAccessToken("Bearer", "bearerToken");
+            MockAccessToken
+                .With(x => x.Scheme, "Bearer")
+                .With(x => x.Token, "bearerToken");
             MockHttpClientFactory.Where_CreateClient_returns(new HttpClient(MockMessageHandler.Build().Object));
 
             //Act
-            Sut.ClearAccessToken();
+            MockAccessToken
+                .With(x => x.Scheme, "")
+                .With(x => x.Token, "");
             Sut.ClearDefaultRequestHeaders();
             await ExecuteAsync(wrapper, CancellationToken.None);
 
             //Assert
             MockMessageHandler.VerifyHeader("userId","123", 0);
             MockMessageHandler.VerifyHeader("name","Bob", 0);
-            MockMessageHandler.VerifyAuthHeader("Bearer","bearerToken", 0);
+            MockMessageHandler.VerifyNoAuthHeader();
         }
         
         [Test]

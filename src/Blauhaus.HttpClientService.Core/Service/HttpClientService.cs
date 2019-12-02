@@ -6,14 +6,13 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Blauhaus.Auth.Abstractions.ClientAuthenticationHandlers;
 using Blauhaus.HttpClientService.Config;
 using Blauhaus.HttpClientService.Exceptions;
 using Blauhaus.HttpClientService.Request;
 using Blauhaus.Loggers.Common.Abstractions;
-using Blauhaus.Loggers.Common.Extensions;
 using Newtonsoft.Json;
 using Polly;
-using LogLevel = Blauhaus.Loggers.Common.Abstractions.LogLevel;
 
 namespace Blauhaus.HttpClientService.Service
 {
@@ -22,17 +21,19 @@ namespace Blauhaus.HttpClientService.Service
         private readonly IHttpClientServiceConfig _config;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogService _logService;
+        private readonly IAuthenticatedAccessToken _defaultAccessToken;
         private readonly Dictionary<string, string> _defaultRequestHeaders = new Dictionary<string, string>();
-        private AuthenticationHeaderValue _authHeader;
 
         public HttpClientService(
             IHttpClientServiceConfig config, 
             IHttpClientFactory httpClientFactory, 
-            ILogService logService)
+            ILogService logService,
+            IAuthenticatedAccessToken accessToken)
         {
             _config = config;
             _httpClientFactory = httpClientFactory;
             _logService = logService;
+            _defaultAccessToken = accessToken;
         }
 
 
@@ -165,16 +166,6 @@ namespace Blauhaus.HttpClientService.Service
                     }
                 });
         }
-
-        public void HandleAccessToken(string scheme, string authenticatedAccessToken)
-        {
-            _authHeader = new AuthenticationHeaderValue(scheme, authenticatedAccessToken);
-        }
-
-        public void ClearAccessToken()
-        {
-            _authHeader = new AuthenticationHeaderValue("Bearer", string.Empty);
-        }
         
         public void SetDefaultRequestHeader(string key, string value)
         {
@@ -241,10 +232,13 @@ namespace Blauhaus.HttpClientService.Service
                 }
             }
 
-            client.DefaultRequestHeaders.Authorization = string.IsNullOrEmpty(authorizationHeader.Key) 
-                ? _authHeader 
-                : new AuthenticationHeaderValue(authorizationHeader.Key, authorizationHeader.Value);
+            if (!string.IsNullOrEmpty(authorizationHeader.Key))
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(authorizationHeader.Key, authorizationHeader.Value);
             
+            else if (!string.IsNullOrEmpty(_defaultAccessToken.Scheme))
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(_defaultAccessToken.Scheme, _defaultAccessToken.Token);
+                
+
             return client;
         }
         

@@ -1,5 +1,5 @@
-﻿using Blauhaus.HttpClientService.Config;
-using Blauhaus.Tests.Helpers;
+﻿using Blauhaus.Common.TestHelpers;
+using Blauhaus.HttpClientService.Config;
 
 namespace Blauhaus.HttpClientService.Tests.Mocks
 {

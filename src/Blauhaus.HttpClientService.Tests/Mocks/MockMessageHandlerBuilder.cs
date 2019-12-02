@@ -103,5 +103,14 @@ namespace Blauhaus.HttpClientService.Tests.Mocks
                     ItExpr.IsAny<CancellationToken>());
         }
 
+        public void VerifyNoAuthHeader()
+        {
+            this.Protected()
+                .Verify<Task<HttpResponseMessage>>("SendAsync", Times.Exactly(1),
+                    ItExpr.Is<HttpRequestMessage>(y => 
+                        y.Headers.Authorization == null),
+                    ItExpr.IsAny<CancellationToken>());
+        }
+
     }
 }
