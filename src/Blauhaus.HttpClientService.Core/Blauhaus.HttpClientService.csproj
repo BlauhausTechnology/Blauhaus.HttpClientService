@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <LanguageVersion>8.0</LanguageVersion>
-    <NullableContextOptions>enable</NullableContextOptions>
+    <LangVersion>8.0</LangVersion>
+    <Nullable>enable</Nullable>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -17,6 +17,10 @@
     <PackageReference Include="Microsoft.Extensions.Http" Version="3.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="Polly" Version="7.2.0" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\Blauhaus.HttpClientService.Abstractions\Blauhaus.HttpClientService.Abstractions.csproj" />
   </ItemGroup>
 
 

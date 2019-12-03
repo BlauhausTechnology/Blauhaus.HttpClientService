@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 
-namespace Blauhaus.HttpClientService.Exceptions
+namespace Blauhaus.HttpClientService.Abstractions.Exceptions
 {
     public class HttpClientServiceException : Exception
     {

@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Blauhaus.Auth.Abstractions.ClientAuthenticationHandlers;
-using Blauhaus.HttpClientService.Request;
 
-namespace Blauhaus.HttpClientService.Service
+namespace Blauhaus.HttpClientService.Abstractions
 {
     public interface IHttpClientService
     {

@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace Blauhaus.HttpClientService.Exceptions
+namespace Blauhaus.HttpClientService.Abstractions.Exceptions
 {
     public class HttpClientServiceAuthorizationException : HttpClientServiceException
     {

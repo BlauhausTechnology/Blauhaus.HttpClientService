@@ -1,4 +1,5 @@
-﻿using Blauhaus.HttpClientService.Request._Base;
+﻿using Blauhaus.HttpClientService.Abstractions;
+using Blauhaus.HttpClientService.Request._Base;
 
 namespace Blauhaus.HttpClientService.Request
 {

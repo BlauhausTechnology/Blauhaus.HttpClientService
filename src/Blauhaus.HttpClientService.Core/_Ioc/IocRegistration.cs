@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using Blauhaus.Auth.Abstractions._Ioc;
 using Blauhaus.Auth.Abstractions.ClientAuthenticationHandlers;
+using Blauhaus.HttpClientService.Abstractions;
 using Blauhaus.HttpClientService.Config;
 using Blauhaus.HttpClientService.Service;
 using Blauhaus.Ioc.Abstractions;

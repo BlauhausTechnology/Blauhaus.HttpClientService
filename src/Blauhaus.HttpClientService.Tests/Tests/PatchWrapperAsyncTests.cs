@@ -1,15 +1,9 @@
-using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Blauhaus.HttpClientService.Exceptions;
 using Blauhaus.HttpClientService.Request;
-using Blauhaus.HttpClientService.Service;
 using Blauhaus.HttpClientService.Tests.Mocks;
 using Blauhaus.HttpClientService.Tests.Tests._Base;
-using Newtonsoft.Json;
-using NUnit.Framework;
-using NUnit.Framework.Internal;
 
 namespace Blauhaus.HttpClientService.Tests.Tests
 {

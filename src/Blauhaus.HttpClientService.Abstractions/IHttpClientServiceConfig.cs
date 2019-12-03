@@ -1,4 +1,4 @@
-﻿namespace Blauhaus.HttpClientService.Config
+﻿namespace Blauhaus.HttpClientService.Abstractions
 {
     public interface IHttpClientServiceConfig
     {

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using Blauhaus.HttpClientService.Abstractions;
 
 namespace Blauhaus.HttpClientService.Request._Base
 {

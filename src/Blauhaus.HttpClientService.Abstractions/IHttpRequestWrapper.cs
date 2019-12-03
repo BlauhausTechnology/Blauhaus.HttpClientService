@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Blauhaus.HttpClientService.Request
+namespace Blauhaus.HttpClientService.Abstractions
 {
 
     public interface IHttpRequestWrapper<out TRequest> : IHttpRequestWrapper

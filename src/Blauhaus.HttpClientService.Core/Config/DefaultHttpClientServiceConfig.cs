@@ -1,4 +1,6 @@
-﻿namespace Blauhaus.HttpClientService.Config
+﻿using Blauhaus.HttpClientService.Abstractions;
+
+namespace Blauhaus.HttpClientService.Config
 {
     public class DefaultHttpClientServiceConfig : IHttpClientServiceConfig
     {
