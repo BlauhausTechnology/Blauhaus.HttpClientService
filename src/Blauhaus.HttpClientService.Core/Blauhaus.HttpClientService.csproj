@@ -13,7 +13,7 @@
     <PackageReference Include="Blauhaus.Auth.Abstractions" Version="0.1.7" />
     <PackageReference Include="Blauhaus.Ioc.Abstractions" Version="0.6.2" />
     <PackageReference Include="Blauhaus.Loggers.Console" Version="0.4.6" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.0.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="3.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="Polly" Version="7.2.0" />
