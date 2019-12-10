@@ -233,6 +233,8 @@ namespace Blauhaus.HttpClientService.Service
                 }
             }
 
+            //TODO Add accesstoken extra headers; 
+
             if (!string.IsNullOrEmpty(authorizationHeader.Key))
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(authorizationHeader.Key, authorizationHeader.Value);
             
