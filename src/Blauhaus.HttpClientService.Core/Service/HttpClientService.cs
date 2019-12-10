@@ -218,14 +218,11 @@ namespace Blauhaus.HttpClientService.Service
 
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            if (requestHeaders == null || requestHeaders.Count == 0)
+            foreach (var defaultRequestHeader in _defaultRequestHeaders)
             {
-                foreach (var defaultRequestHeader in _defaultRequestHeaders)
-                {
-                    client.DefaultRequestHeaders.Add(defaultRequestHeader.Key, defaultRequestHeader.Value);
-                }
+                client.DefaultRequestHeaders.Add(defaultRequestHeader.Key, defaultRequestHeader.Value);
             }
-            else
+            if(requestHeaders!=null)
             {
                 foreach (var requestHeader in requestHeaders)
                 {
@@ -233,7 +230,10 @@ namespace Blauhaus.HttpClientService.Service
                 }
             }
 
-            //TODO Add accesstoken extra headers; 
+            foreach (var additionalHeader in _defaultAccessToken.AdditionalHeaders)
+            {
+                client.DefaultRequestHeaders.Add(additionalHeader.Key, additionalHeader.Value);
+            }
 
             if (!string.IsNullOrEmpty(authorizationHeader.Key))
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(authorizationHeader.Key, authorizationHeader.Value);
