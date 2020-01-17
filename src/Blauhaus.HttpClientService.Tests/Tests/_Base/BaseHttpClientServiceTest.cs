@@ -1,4 +1,5 @@
-﻿using Blauhaus.Auth.Abstractions.ClientAuthenticationHandlers;
+﻿using System.Collections.Generic;
+using Blauhaus.Auth.Abstractions.ClientAuthenticationHandlers;
 using Blauhaus.Common.TestHelpers;
 using Blauhaus.HttpClientService.Tests.Mocks;
 using Blauhaus.Loggers.Common.Abstractions;
@@ -32,6 +33,8 @@ namespace Blauhaus.HttpClientService.Tests.Tests._Base
             MockHttpClientFactory = new HttpClientFactoryMockBuilder();
             MockMessageHandler = new MockMessageHandlerBuilder();
             MockClientServiceConfig = new HttpClientServiceConfigMockBuilder();
+            MockAccessToken = new MockBuilder<IAuthenticatedAccessToken>()
+                .With(x => x.AdditionalHeaders, new Dictionary<string, string>());
             Cleanup();
         }
     }
