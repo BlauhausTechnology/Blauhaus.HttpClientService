@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Blauhaus.HttpClientService._Ioc
 {
-    public static class IocRegistration
+    public static class IocServiceExtensions
     {
         public static IIocService RegisterHttpService(this IIocService iocService) 
         {
