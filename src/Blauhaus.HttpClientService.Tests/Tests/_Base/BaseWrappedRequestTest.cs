@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -111,6 +112,31 @@ namespace Blauhaus.HttpClientService.Tests.Tests._Base
         }
         
         [Test]
+        public async Task SHOULD_append_acces_token_headers_if_set()
+        {
+            //Arrange
+            var wrapper = GetWrapper();
+            MockAccessToken
+                .With(x => x.Scheme, "Bearer")
+                .With(x => x.Token, "bearerToken")
+                .With(x => x.AdditionalHeaders, new Dictionary<string, string>
+                {
+                    {"h1", "header1" },
+                    {"h2", "header2" },
+                });
+            MockHttpClientFactory.Where_CreateClient_returns(new HttpClient(MockMessageHandler.Build().Object));
+
+            //Act
+            await ExecuteAsync(wrapper, CancellationToken.None);
+
+            //Assert
+            MockMessageHandler.VerifyHeader("h1","header1");
+            MockMessageHandler.VerifyHeader("h2","header2");
+            MockMessageHandler.VerifyAuthHeader("Bearer","bearerToken");
+        }
+
+
+        [Test]
         public async Task SHOULD_return_deserialized_dto()
         {
             //Arrange
@@ -125,7 +151,7 @@ namespace Blauhaus.HttpClientService.Tests.Tests._Base
             //Assert
             Assert.That(result.TestDtoProperty, Is.EqualTo("Hello back"));
         }
-
+        
         [Test]
         public void WHEN_post_fails_with_error_message_SHOULD_throw()
         {
