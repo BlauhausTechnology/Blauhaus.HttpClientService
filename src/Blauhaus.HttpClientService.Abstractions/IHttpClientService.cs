@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace Blauhaus.HttpClientService.Abstractions
 {
@@ -12,7 +13,7 @@ namespace Blauhaus.HttpClientService.Abstractions
         Task PostAsync<TRequest>(string route, TRequest request, CancellationToken token);
         
         Task<TResponse> PostAsync<TRequest, TResponse>(IHttpRequestWrapper<TRequest> request, CancellationToken token);
-        Task<TResponse> PatchAsync<TRequest, TResponse>(IHttpRequestWrapper<TRequest> request, CancellationToken token);
+        Task<TResponse> PatchAsync<TResponse>(IHttpRequestWrapper<JObject> request, CancellationToken token);
         Task<TResponse> GetAsync<TResponse>(IHttpRequestWrapper request, CancellationToken token);
         Task<TResponse> DeleteAsync<TResponse>(IHttpRequestWrapper request, CancellationToken token);
 
