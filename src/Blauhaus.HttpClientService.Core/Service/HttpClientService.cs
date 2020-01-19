@@ -13,6 +13,7 @@ using Blauhaus.HttpClientService.Config;
 using Blauhaus.HttpClientService.Request;
 using Blauhaus.Loggers.Common.Abstractions;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Polly;
 
 namespace Blauhaus.HttpClientService.Service
@@ -83,9 +84,9 @@ namespace Blauhaus.HttpClientService.Service
             }
         }
 
-        public  async Task<TResponse> PatchAsync<TRequest, TResponse>(IHttpRequestWrapper<TRequest> request, CancellationToken token)
+        public  async Task<TResponse> PatchAsync<TResponse>(IHttpRequestWrapper<JObject> request, CancellationToken token)
         {
-            var httpContent = new StringContent(JsonConvert.SerializeObject(request.Request), new UTF8Encoding(), "application/json");
+            var httpContent = new StringContent(request.Request.ToString(), new UTF8Encoding(), "application/json");
             var requestMessage = new HttpRequestMessage(new HttpMethod("PATCH"), request.Url) {Content = httpContent};
             var client = GetClient(request.RequestHeaders, request.AuthorizationHeader);
 
