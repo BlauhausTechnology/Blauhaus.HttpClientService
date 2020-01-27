@@ -25,6 +25,7 @@ namespace Blauhaus.HttpClientService.Service
         private readonly ILogService _logService;
         private readonly IAuthenticatedAccessToken _defaultAccessToken;
         private readonly Dictionary<string, string> _defaultRequestHeaders = new Dictionary<string, string>();
+        private TimeSpan _timeout;
 
         public HttpClientService(
             IHttpClientServiceConfig config, 
@@ -36,16 +37,15 @@ namespace Blauhaus.HttpClientService.Service
             _httpClientFactory = httpClientFactory;
             _logService = logService;
             _defaultAccessToken = accessToken;
+            _timeout = config.RequestTimeout ?? TimeSpan.FromMinutes(1);
         }
-
-
 
         public async Task<TResponse> PostAsync<TRequest, TResponse>(string route, TRequest dto, CancellationToken token)
         {
             var httpClient = GetClient(new Dictionary<string, string>(), new KeyValuePair<string, string>());
             var httpContent = new StringContent(JsonConvert.SerializeObject(dto), new UTF8Encoding(), "application/json");
 
-            var responseMessage = await TryExecuteAsync(t=> httpClient.PostAsync(route, httpContent, t), TimeSpan.FromSeconds(60), token);
+            var responseMessage = await TryExecuteAsync(t=> httpClient.PostAsync(route, httpContent, t), _timeout, token);
 
             if (responseMessage.IsSuccessStatusCode)
             {
@@ -61,7 +61,7 @@ namespace Blauhaus.HttpClientService.Service
             var httpContent = new StringContent(JsonConvert.SerializeObject(request.Request), new UTF8Encoding(), "application/json");
             var client = GetClient(request.RequestHeaders, request.AuthorizationHeader);
 
-            var httpResponse = await TryExecuteAsync(t=> client.PostAsync(request.Url, httpContent, t), TimeSpan.FromSeconds(60), token);
+            var httpResponse = await TryExecuteAsync(t=> client.PostAsync(request.Url, httpContent, t), _timeout, token);
 
             if (!httpResponse.IsSuccessStatusCode)
             {
@@ -76,7 +76,7 @@ namespace Blauhaus.HttpClientService.Service
             var httpContent = new StringContent(JsonConvert.SerializeObject(dto), new UTF8Encoding(), "application/json");
             var httpClient = GetClient(new Dictionary<string, string>(), new KeyValuePair<string, string>());
             
-            var httpResponse = await TryExecuteAsync(t=> httpClient.PostAsync(route, httpContent, t), TimeSpan.FromSeconds(60), token);
+            var httpResponse = await TryExecuteAsync(t=> httpClient.PostAsync(route, httpContent, t), _timeout, token);
 
             if (!httpResponse.IsSuccessStatusCode)
             {
@@ -104,7 +104,7 @@ namespace Blauhaus.HttpClientService.Service
         {
             var client = GetClient(request.RequestHeaders, request.AuthorizationHeader);
 
-            var httpResponse = await TryExecuteAsync(t => client.GetAsync(request.Url, t), TimeSpan.FromSeconds(60), token);
+            var httpResponse = await TryExecuteAsync(t => client.GetAsync(request.Url, t), _timeout, token);
 
             if (!httpResponse.IsSuccessStatusCode)
             {
@@ -118,7 +118,7 @@ namespace Blauhaus.HttpClientService.Service
         {
             var client = GetClient(request.RequestHeaders, request.AuthorizationHeader);
 
-            var httpResponse = await TryExecuteAsync(t => client.DeleteAsync(request.Url, t), TimeSpan.FromSeconds(60), token);
+            var httpResponse = await TryExecuteAsync(t => client.DeleteAsync(request.Url, t), _timeout, token);
 
             if (!httpResponse.IsSuccessStatusCode)
             {
@@ -215,7 +215,7 @@ namespace Blauhaus.HttpClientService.Service
         private HttpClient GetClient(Dictionary<string, string> requestHeaders, KeyValuePair<string, string> authorizationHeader)
         {
             var client = _httpClientFactory.CreateClient();
-            client.Timeout =TimeSpan.FromSeconds(90);
+            client.Timeout = _timeout;
 
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
