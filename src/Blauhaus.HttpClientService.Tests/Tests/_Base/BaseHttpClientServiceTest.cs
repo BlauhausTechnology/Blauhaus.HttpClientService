@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
+using Blauhaus.Analytics.Abstractions.Service;
 using Blauhaus.Auth.Abstractions.ClientAuthenticationHandlers;
 using Blauhaus.Common.TestHelpers;
 using Blauhaus.HttpClientService.Tests.Mocks;
-using Blauhaus.Loggers.Common.Abstractions;
 using Moq;
 using NUnit.Framework;
 
@@ -22,7 +22,7 @@ namespace Blauhaus.HttpClientService.Tests.Tests._Base
             return new Service.HttpClientService(
                 MockClientServiceConfig.Object, 
                 MockHttpClientFactory.Object, 
-                Mock.Of<ILogService>(), 
+                Mock.Of<IAnalyticsService>(), 
                 MockAccessToken.Object);
         }
 

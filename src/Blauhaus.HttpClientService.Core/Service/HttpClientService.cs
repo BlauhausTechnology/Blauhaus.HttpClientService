@@ -6,12 +6,10 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Blauhaus.Analytics.Abstractions.Service;
 using Blauhaus.Auth.Abstractions.ClientAuthenticationHandlers;
 using Blauhaus.HttpClientService.Abstractions;
 using Blauhaus.HttpClientService.Abstractions.Exceptions;
-using Blauhaus.HttpClientService.Config;
-using Blauhaus.HttpClientService.Request;
-using Blauhaus.Loggers.Common.Abstractions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Polly;
@@ -22,20 +20,20 @@ namespace Blauhaus.HttpClientService.Service
     {
         private readonly IHttpClientServiceConfig _config;
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly ILogService _logService;
+        private readonly IAnalyticsService _analyticsService;
         private readonly IAuthenticatedAccessToken _defaultAccessToken;
         private readonly Dictionary<string, string> _defaultRequestHeaders = new Dictionary<string, string>();
-        private TimeSpan _timeout;
+        private readonly TimeSpan _timeout;
 
         public HttpClientService(
             IHttpClientServiceConfig config, 
             IHttpClientFactory httpClientFactory, 
-            ILogService logService,
+            IAnalyticsService analyticsService,
             IAuthenticatedAccessToken accessToken)
         {
             _config = config;
             _httpClientFactory = httpClientFactory;
-            _logService = logService;
+            _analyticsService = analyticsService;
             _defaultAccessToken = accessToken;
             _timeout = config.RequestTimeout ?? TimeSpan.FromMinutes(1);
         }
@@ -133,42 +131,6 @@ namespace Blauhaus.HttpClientService.Service
             return await task.Invoke(cancellationToken);
         }
 
-        //this is not used for now because it throws cancelled exceptions out and i don't know what type of HttpResponse message to return if the task is cancelled
-        //too fucking complicated
-        private async Task<HttpResponseMessage> TryExecuteWithTimeoutHandlerAsync(Func<CancellationToken, Task<HttpResponseMessage>> task, TimeSpan timeout, CancellationToken cancellationToken)
-        {
-            return await Policy<HttpResponseMessage>
-                .Handle<TimeoutException>(ex =>
-                {
-                    //_logService.Trace("Request Timed out");
-                    return true;
-                })
-                .WaitAndRetryAsync
-                (
-                    5,
-                    retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))
-                )
-                .ExecuteAsync(async () =>
-                {
-                    //httpclient throws TaskCanceled for timeouts and cancellations, so this method creates a custom timeout
-
-                    var cts = new CancellationTokenSource();
-                    cts.CancelAfter(timeout);
-                    var timeoutToken = cts.Token;
-
-                    var linkedToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutToken);
-
-                    try
-                    {
-                        return await task.Invoke(linkedToken.Token);
-                    }
-                    catch (OperationCanceledException) when (timeoutToken.IsCancellationRequested)
-                    {
-                        throw new TimeoutException();
-                    }
-                });
-        }
-        
         public void SetDefaultRequestHeader(string key, string value)
         {
             _defaultRequestHeaders[key] = value;
@@ -182,19 +144,38 @@ namespace Blauhaus.HttpClientService.Service
 
         #region Privates
         
-        private async Task<TResponse> UnwrapResponseAsync<TResponse>(HttpResponseMessage responseMessage)
+        private async Task<TResponse> UnwrapResponseAsync<TResponse>(HttpResponseMessage httpResponse)
         {
-            var jsonBody = await responseMessage.Content.ReadAsStringAsync();
+            var traceProperties = new Dictionary<string, object>
+            {
+                {"Http.StatusCode",  httpResponse.StatusCode},
+                {"Http.RequestUri",  httpResponse.RequestMessage?.RequestUri},
+                {"Http.Method",  httpResponse.RequestMessage?.Method},
+                {"Http.ReturnType",  typeof(TResponse).Name},
+            };
+
+            var jsonBody = await httpResponse.Content.ReadAsStringAsync();
             var deserializedResponse = JsonConvert.DeserializeObject<TResponse>(jsonBody);
+
+            _analyticsService.Trace("HttpClientService: Request succeeded", LogSeverity.Verbose, traceProperties);
+
             return deserializedResponse;
         }
 
         private async Task HandleFailResponseAsync(HttpResponseMessage httpResponse)
         {
+            var traceProperties = new Dictionary<string, object>
+            {
+                {"Http.StatusCode",  httpResponse.StatusCode},
+                {"Http.ReasonPhrase",  httpResponse.ReasonPhrase},
+                {"Http.RequestUri",  httpResponse?.RequestMessage?.RequestUri},
+                {"Http.Method",  httpResponse?.RequestMessage?.Method},
+            };
+
             if (httpResponse.StatusCode == HttpStatusCode.Forbidden ||
                 httpResponse.StatusCode == HttpStatusCode.Unauthorized)
             {
-                //_logService.Trace($"Client is not allowed to access this endpoint!");
+                _analyticsService.Trace($"HttpClientService: Request authorization failed", LogSeverity.Warning, traceProperties);
                 throw new HttpClientServiceAuthorizationException(httpResponse.StatusCode, httpResponse.ReasonPhrase);
             }
 
@@ -203,12 +184,13 @@ namespace Blauhaus.HttpClientService.Service
 
             if (error != null && !string.IsNullOrEmpty(error.Message))
             {
-                //_logService.Trace($"Server returned an error: {error.Message}");
+                _analyticsService.Trace($"HttpClientService: Server error.", LogSeverity.Warning, traceProperties);
+                traceProperties["Http.ServerErrorMessage"] = error.Message;
                 throw new HttpClientServiceServerError(httpResponse.StatusCode, error.Message);
             }
-            //_logService.Trace($"General http client exception: {httpResponse.StatusCode} ({httpResponse.ReasonPhrase})");
+
+            _analyticsService.Trace($"HttpClientService: HttpClient error.", LogSeverity.Information, traceProperties);
             throw new HttpClientServiceException(httpResponse.StatusCode, httpResponse.ReasonPhrase);
-            
         }
 
 

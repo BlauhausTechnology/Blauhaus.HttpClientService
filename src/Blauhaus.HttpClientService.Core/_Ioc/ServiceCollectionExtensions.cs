@@ -1,37 +1,35 @@
-﻿using System.Net.Http;
+﻿using System.Diagnostics;
+using Blauhaus.Analytics.Console._Ioc;
 using Blauhaus.Auth.Abstractions._Ioc;
 using Blauhaus.Auth.Abstractions.ClientAuthenticationHandlers;
 using Blauhaus.HttpClientService.Abstractions;
 using Blauhaus.HttpClientService.Config;
-using Blauhaus.HttpClientService.Service;
-using Blauhaus.Ioc.Abstractions;
-using Blauhaus.Loggers.Console._Ioc;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Blauhaus.HttpClientService._Ioc
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection RegisterHttpService(this IServiceCollection services) 
+        public static IServiceCollection RegisterHttpService(this IServiceCollection services, TraceListener traceListener) 
         {
             services.RegisterAccessToken();
-            Register(services);
+            Register(services, traceListener);
             return services;
         }
 
-        public static IServiceCollection RegisterHttpService<TAccessToken>(this IServiceCollection services) where TAccessToken : AuthenticatedAccessToken
+        public static IServiceCollection RegisterHttpService<TAccessToken>(this IServiceCollection services, TraceListener traceListener) where TAccessToken : AuthenticatedAccessToken
         {
             services.RegisterAccessToken<TAccessToken>();
-            Register(services);
+            Register(services, traceListener);
             return services;
         }
 
-        private static void Register(IServiceCollection services)
+        private static void Register(IServiceCollection services, TraceListener traceListener)
         {
             services.AddHttpClient();
             services.AddScoped<IHttpClientService, Service.HttpClientService>();
             services.AddScoped<IHttpClientServiceConfig, DefaultHttpClientServiceConfig>();
-            services.RegisterConsoleLogger();
+            services.RegisterConsoleLogger(traceListener);
         }
     }
 }

@@ -1,11 +1,10 @@
 ﻿using System.Net.Http;
+using Blauhaus.Analytics.Console._Ioc;
 using Blauhaus.Auth.Abstractions._Ioc;
 using Blauhaus.Auth.Abstractions.ClientAuthenticationHandlers;
 using Blauhaus.HttpClientService.Abstractions;
 using Blauhaus.HttpClientService.Config;
-using Blauhaus.HttpClientService.Service;
 using Blauhaus.Ioc.Abstractions;
-using Blauhaus.Loggers.Console._Ioc;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Blauhaus.HttpClientService._Ioc
