@@ -134,7 +134,24 @@ namespace Blauhaus.HttpClientService.Tests.Tests._Base
             MockMessageHandler.VerifyHeader("h2","header2");
             MockMessageHandler.VerifyAuthHeader("Bearer","bearerToken");
         }
+        
+        [Test]
+        public async Task SHOULD_append_analytics_headers_if_present()
+        {
+            //Arrange
+            MockAnalyticsService.With(x => x.AnalyticsOperationHeaders, new Dictionary<string, string>
+            {
+                {"analyticsHeaderKey", "analyticsHeaderValue" }
+            });
+            var wrapper = GetWrapper();
+            MockHttpClientFactory.Where_CreateClient_returns(new HttpClient(MockMessageHandler.Build().Object));
 
+            //Act
+            await ExecuteAsync(wrapper, CancellationToken.None);
+
+            //Assert
+            MockMessageHandler.VerifyHeader("analyticsHeaderKey","analyticsHeaderValue");
+        }
 
         [Test]
         public async Task SHOULD_return_deserialized_dto()

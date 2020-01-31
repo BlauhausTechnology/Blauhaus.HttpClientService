@@ -1,25 +1,24 @@
 ﻿using System.Net.Http;
+using Blauhaus.Analytics.Console._Ioc;
 using Blauhaus.Auth.Abstractions._Ioc;
 using Blauhaus.Auth.Abstractions.ClientAuthenticationHandlers;
 using Blauhaus.HttpClientService.Abstractions;
 using Blauhaus.HttpClientService.Config;
-using Blauhaus.HttpClientService.Service;
 using Blauhaus.Ioc.Abstractions;
-using Blauhaus.Loggers.Console._Ioc;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Blauhaus.HttpClientService._Ioc
 {
     public static class IocServiceExtensions
     {
-        public static IIocService RegisterHttpService(this IIocService iocService) 
+        public static IIocService RegisterClientHttpService(this IIocService iocService) 
         {
             iocService.RegisterAccessToken();
             Register(iocService);
             return iocService;
         }
 
-        public static IIocService RegisterHttpService<TAccessToken>(this IIocService iocService) where TAccessToken : AuthenticatedAccessToken
+        public static IIocService RegisterClientHttpService<TAccessToken>(this IIocService iocService) where TAccessToken : AuthenticatedAccessToken
         {
             iocService.RegisterAccessToken<TAccessToken>();
             Register(iocService);
@@ -35,7 +34,7 @@ namespace Blauhaus.HttpClientService._Ioc
             iocService.RegisterInstance(httpClientFactory);
             iocService.RegisterImplementation<IHttpClientService, Service.HttpClientService>(IocLifetime.Singleton);
             iocService.RegisterImplementation<IHttpClientServiceConfig, DefaultHttpClientServiceConfig>(IocLifetime.Singleton);
-            iocService.RegisterConsoleLogger();
+            iocService.RegisterConsoleLoggerClientService();
         }
     }
 }
