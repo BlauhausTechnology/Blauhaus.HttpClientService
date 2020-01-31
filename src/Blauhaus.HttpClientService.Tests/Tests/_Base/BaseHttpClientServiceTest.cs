@@ -14,6 +14,7 @@ namespace Blauhaus.HttpClientService.Tests.Tests._Base
         protected MockMessageHandlerBuilder MockMessageHandler;
         protected HttpClientServiceConfigMockBuilder MockClientServiceConfig;
         protected MockBuilder<IAuthenticatedAccessToken> MockAccessToken;
+        protected MockBuilder<IAnalyticsClientService> MockAnalyticsService;
 
        
 
@@ -22,7 +23,7 @@ namespace Blauhaus.HttpClientService.Tests.Tests._Base
             return new Service.HttpClientService(
                 MockClientServiceConfig.Object, 
                 MockHttpClientFactory.Object, 
-                Mock.Of<IAnalyticsService>(), 
+                MockAnalyticsService.Object, 
                 MockAccessToken.Object);
         }
 
@@ -35,6 +36,8 @@ namespace Blauhaus.HttpClientService.Tests.Tests._Base
             MockClientServiceConfig = new HttpClientServiceConfigMockBuilder();
             MockAccessToken = new MockBuilder<IAuthenticatedAccessToken>()
                 .With(x => x.AdditionalHeaders, new Dictionary<string, string>());
+            MockAnalyticsService = new MockBuilder<IAnalyticsClientService>()
+                .With(x => x.AnalyticsOperationHeaders, new Dictionary<string, string>());
             Cleanup();
         }
     }

@@ -146,18 +146,25 @@ namespace Blauhaus.HttpClientService.Service
         
         private async Task<TResponse> UnwrapResponseAsync<TResponse>(HttpResponseMessage httpResponse)
         {
-            var traceProperties = new Dictionary<string, object>
-            {
-                {"Http.StatusCode",  httpResponse.StatusCode},
-                {"Http.RequestUri",  httpResponse.RequestMessage?.RequestUri},
-                {"Http.Method",  httpResponse.RequestMessage?.Method},
-                {"Http.ReturnType",  typeof(TResponse).Name},
-            };
-
             var jsonBody = await httpResponse.Content.ReadAsStringAsync();
             var deserializedResponse = JsonConvert.DeserializeObject<TResponse>(jsonBody);
+            
+            var trace = new StringBuilder().Append("HttpClientService: ");
 
-            _analyticsService.Trace("HttpClientService: Request succeeded", LogSeverity.Verbose, traceProperties);
+            if (httpResponse.RequestMessage != null)
+            {
+                trace.Append(httpResponse.RequestMessage.Method.Method)
+                    .Append(" to ")
+                    .Append(httpResponse.RequestMessage.RequestUri.AbsoluteUri);
+            }
+            else
+            {
+                trace.Append("Request");
+            }
+
+            trace.Append(" succeeded with " + httpResponse.StatusCode);
+
+            _analyticsService.Trace(trace.ToString());
 
             return deserializedResponse;
         }
@@ -216,6 +223,15 @@ namespace Blauhaus.HttpClientService.Service
             foreach (var additionalHeader in _defaultAccessToken.AdditionalHeaders)
             {
                 client.DefaultRequestHeaders.Add(additionalHeader.Key, additionalHeader.Value);
+            }
+
+            if (_analyticsService is IAnalyticsClientService analyticsClient)
+            {
+                foreach (var analyticsHeader in analyticsClient.AnalyticsOperationHeaders)
+                {
+
+                    client.DefaultRequestHeaders.Add(analyticsHeader.Key, analyticsHeader.Value);
+                }
             }
 
             if (!string.IsNullOrEmpty(authorizationHeader.Key))
