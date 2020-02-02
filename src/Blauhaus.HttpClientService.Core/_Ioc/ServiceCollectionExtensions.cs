@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using Blauhaus.Analytics.Console._Ioc;
 using Blauhaus.Auth.Abstractions._Ioc;
-using Blauhaus.Auth.Abstractions.ClientAuthenticationHandlers;
+using Blauhaus.Auth.Abstractions.AccessToken;
 using Blauhaus.HttpClientService.Abstractions;
 using Blauhaus.HttpClientService.Config;
 using Microsoft.Extensions.DependencyInjection;
