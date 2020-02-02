@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Blauhaus.Analytics.Abstractions.Service;
-using Blauhaus.Auth.Abstractions.ClientAuthenticationHandlers;
+using Blauhaus.Auth.Abstractions.AccessToken;
 using Blauhaus.Common.TestHelpers;
 using Blauhaus.HttpClientService.Tests.Mocks;
 using Moq;
