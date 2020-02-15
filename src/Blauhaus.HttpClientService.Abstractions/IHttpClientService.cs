@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
@@ -17,6 +19,7 @@ namespace Blauhaus.HttpClientService.Abstractions
         Task<TResponse> GetAsync<TResponse>(IHttpRequestWrapper request, CancellationToken token);
         Task<TResponse> DeleteAsync<TResponse>(IHttpRequestWrapper request, CancellationToken token);
 
+        HttpClient GetClient(Dictionary<string, string> requestHeaders = default, KeyValuePair<string, string> authorizationHeader = default);
 
         void SetDefaultRequestHeader(string key, string value);
         void ClearDefaultRequestHeaders();
