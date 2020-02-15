@@ -27,8 +27,8 @@ namespace Blauhaus.HttpClientService._Ioc
         private static void Register(IServiceCollection services, TraceListener traceListener)
         {
             services.AddHttpClient();
-            services.AddScoped<IHttpClientService, Service.HttpClientService>();
-            services.AddScoped<IHttpClientServiceConfig, DefaultHttpClientServiceConfig>();
+            services.AddSingleton<IHttpClientService, Service.HttpClientService>();
+            services.AddSingleton<IHttpClientServiceConfig, DefaultHttpClientServiceConfig>();
             services.RegisterConsoleLoggerServerService(traceListener);
         }
     }

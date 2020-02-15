@@ -201,7 +201,7 @@ namespace Blauhaus.HttpClientService.Service
         }
 
 
-        public HttpClient GetClient(Dictionary<string, string> requestHeaders, KeyValuePair<string, string> authorizationHeader)
+        public HttpClient GetClient(Dictionary<string, string> requestHeaders = default, KeyValuePair<string, string> authorizationHeader = default)
         {
             var client = _httpClientFactory.CreateClient();
             client.Timeout = _timeout;
