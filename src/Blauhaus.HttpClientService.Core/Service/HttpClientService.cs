@@ -201,7 +201,7 @@ namespace Blauhaus.HttpClientService.Service
         }
 
 
-        private HttpClient GetClient(Dictionary<string, string> requestHeaders, KeyValuePair<string, string> authorizationHeader)
+        public HttpClient GetClient(Dictionary<string, string> requestHeaders, KeyValuePair<string, string> authorizationHeader)
         {
             var client = _httpClientFactory.CreateClient();
             client.Timeout = _timeout;
@@ -229,7 +229,6 @@ namespace Blauhaus.HttpClientService.Service
             {
                 foreach (var analyticsHeader in analyticsClient.AnalyticsOperationHeaders)
                 {
-
                     client.DefaultRequestHeaders.Add(analyticsHeader.Key, analyticsHeader.Value);
                 }
             }
