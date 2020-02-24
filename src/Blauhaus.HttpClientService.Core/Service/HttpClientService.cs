@@ -191,12 +191,12 @@ namespace Blauhaus.HttpClientService.Service
 
             if (error != null && !string.IsNullOrEmpty(error.Message))
             {
-                _analyticsService.Trace(this, $"HttpClientService: Server error.", LogSeverity.Warning, traceProperties);
-                traceProperties["Http.ServerErrorMessage"] = error.Message;
+                traceProperties["ServerErrorMessage"] = error.Message;
+                _analyticsService.Trace(this, "Server error", LogSeverity.Warning, traceProperties);
                 throw new HttpClientServiceServerError(httpResponse.StatusCode, error.Message);
             }
 
-            _analyticsService.Trace(this, $"HttpClientService: HttpClient error.", LogSeverity.Information, traceProperties);
+            _analyticsService.Trace(this, "HttpClientService: HttpClient error.", LogSeverity.Information, traceProperties);
             throw new HttpClientServiceException(httpResponse.StatusCode, httpResponse.ReasonPhrase);
         }
 
