@@ -164,7 +164,7 @@ namespace Blauhaus.HttpClientService.Service
 
             trace.Append(" succeeded with " + httpResponse.StatusCode);
 
-            _analyticsService.Trace(trace.ToString());
+            _analyticsService.Trace(this, trace.ToString());
 
             return deserializedResponse;
         }
@@ -182,7 +182,7 @@ namespace Blauhaus.HttpClientService.Service
             if (httpResponse.StatusCode == HttpStatusCode.Forbidden ||
                 httpResponse.StatusCode == HttpStatusCode.Unauthorized)
             {
-                _analyticsService.Trace($"HttpClientService: Request authorization failed", LogSeverity.Warning, traceProperties);
+                _analyticsService.Trace(this, $"HttpClientService: Request authorization failed", LogSeverity.Warning, traceProperties);
                 throw new HttpClientServiceAuthorizationException(httpResponse.StatusCode, httpResponse.ReasonPhrase);
             }
 
@@ -191,12 +191,12 @@ namespace Blauhaus.HttpClientService.Service
 
             if (error != null && !string.IsNullOrEmpty(error.Message))
             {
-                _analyticsService.Trace($"HttpClientService: Server error.", LogSeverity.Warning, traceProperties);
-                traceProperties["Http.ServerErrorMessage"] = error.Message;
+                traceProperties["ServerErrorMessage"] = error.Message;
+                _analyticsService.Trace(this, "Server error", LogSeverity.Warning, traceProperties);
                 throw new HttpClientServiceServerError(httpResponse.StatusCode, error.Message);
             }
 
-            _analyticsService.Trace($"HttpClientService: HttpClient error.", LogSeverity.Information, traceProperties);
+            _analyticsService.Trace(this, "HttpClientService: HttpClient error.", LogSeverity.Information, traceProperties);
             throw new HttpClientServiceException(httpResponse.StatusCode, httpResponse.ReasonPhrase);
         }
 
@@ -225,12 +225,9 @@ namespace Blauhaus.HttpClientService.Service
                 client.DefaultRequestHeaders.Add(additionalHeader.Key, additionalHeader.Value);
             }
 
-            if (_analyticsService is IAnalyticsClientService analyticsClient)
+            foreach (var analyticsHeader in _analyticsService.AnalyticsOperationHeaders)
             {
-                foreach (var analyticsHeader in analyticsClient.AnalyticsOperationHeaders)
-                {
-                    client.DefaultRequestHeaders.Add(analyticsHeader.Key, analyticsHeader.Value);
-                }
+                client.DefaultRequestHeaders.Add(analyticsHeader.Key, analyticsHeader.Value);
             }
 
             if (!string.IsNullOrEmpty(authorizationHeader.Key))

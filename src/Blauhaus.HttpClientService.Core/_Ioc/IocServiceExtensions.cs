@@ -18,13 +18,6 @@ namespace Blauhaus.HttpClientService._Ioc
             return iocService;
         }
 
-        public static IIocService RegisterClientHttpService<TAccessToken>(this IIocService iocService) where TAccessToken : AuthenticatedAccessToken
-        {
-            iocService.RegisterAccessToken<TAccessToken>();
-            Register(iocService);
-            return iocService;
-        }
-
         private static void Register(IIocService iocService)
         {
             var httpClientFactory = (IHttpClientFactory)new ServiceCollection()
