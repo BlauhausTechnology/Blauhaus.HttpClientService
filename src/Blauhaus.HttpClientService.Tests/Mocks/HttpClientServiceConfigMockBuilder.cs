@@ -1,6 +1,5 @@
-﻿using Blauhaus.Common.TestHelpers;
-using Blauhaus.Common.TestHelpers.MockBuilders;
-using Blauhaus.HttpClientService.Abstractions;
+﻿using Blauhaus.HttpClientService.Abstractions;
+using Blauhaus.TestHelpers.MockBuilders;
 
 namespace Blauhaus.HttpClientService.Tests.Mocks
 {
