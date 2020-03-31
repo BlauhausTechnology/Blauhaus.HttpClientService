@@ -3,6 +3,7 @@ using Blauhaus.Analytics.Abstractions.Service;
 using Blauhaus.Auth.Abstractions.AccessToken;
 using Blauhaus.Common.TestHelpers;
 using Blauhaus.Common.TestHelpers.Http.MockBuilders;
+using Blauhaus.Common.TestHelpers.MockBuilders;
 using Blauhaus.HttpClientService.Tests.Mocks;
 using Moq;
 using NUnit.Framework;
