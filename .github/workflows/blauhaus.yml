@@ -18,7 +18,7 @@ jobs:
        run: |
         dotnet build ./src/Blauhaus.HttpClientService.sln --configuration Release
         dotnet test ./src/Blauhaus.HttpClientService.sln
-        dotnet pack ./src/Blauhaus.HttpClientService/Blauhaus.HttpClientService.csproj -p:PackageVersion=${VERSION_NAME} --no-build --output ./ --configuration Release 
+        dotnet pack ./src/Blauhaus.HttpClientService.Core/Blauhaus.HttpClientService.csproj -p:PackageVersion=${VERSION_NAME} --no-build --output ./ --configuration Release 
         dotnet pack ./src/Blauhaus.HttpClientService.Abstractions/Blauhaus.HttpClientService.Abstractions.csproj -p:PackageVersion=${VERSION_NAME} --no-build --output ./ --configuration Release 
         dotnet pack ./src/Blauhaus.HttpClientService.TestHelpers/Blauhaus.HttpClientService.TestHelpers.csproj -p:PackageVersion=${VERSION_NAME} --no-build --output ./ --configuration Release 
      - name: Deploy NuGet Packages
