@@ -136,6 +136,11 @@ namespace Blauhaus.HttpClientService.Service
             _defaultRequestHeaders[key] = value;
         }
 
+        public bool TryGetDefaultRequestHeader(string key, out string value)
+        {
+            return _defaultRequestHeaders.TryGetValue(key, out value);
+        }
+
         public void ClearDefaultRequestHeaders()
         {
             _defaultRequestHeaders.Clear();
