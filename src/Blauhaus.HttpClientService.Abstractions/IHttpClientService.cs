@@ -22,6 +22,7 @@ namespace Blauhaus.HttpClientService.Abstractions
         HttpClient GetClient(Dictionary<string, string> requestHeaders = default, KeyValuePair<string, string> authorizationHeader = default);
 
         void SetDefaultRequestHeader(string key, string value);
+        bool TryGetDefaultRequestHeader(string key, out string value);
         void ClearDefaultRequestHeaders();
     }
 }
