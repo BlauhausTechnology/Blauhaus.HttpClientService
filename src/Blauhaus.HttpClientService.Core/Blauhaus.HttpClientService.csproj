@@ -10,7 +10,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="Blauhaus.Analytics.Console" Version="0.8.4" />
+    <PackageReference Include="Blauhaus.Analytics.Console" Version="0.8.5" />
     <PackageReference Include="Blauhaus.Auth.Abstractions" Version="0.8.16" />
     <PackageReference Include="Blauhaus.Ioc.Abstractions" Version="0.7.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.5" />
