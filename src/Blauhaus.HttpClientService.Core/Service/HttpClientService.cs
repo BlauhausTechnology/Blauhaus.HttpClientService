@@ -160,7 +160,7 @@ namespace Blauhaus.HttpClientService.Service
             {
                 trace.Append(httpResponse.RequestMessage.Method.Method)
                     .Append(" to ")
-                    .Append(httpResponse.RequestMessage.RequestUri.AbsoluteUri);
+                    .Append(httpResponse.RequestMessage.RequestUri.Host);
             }
             else
             {
