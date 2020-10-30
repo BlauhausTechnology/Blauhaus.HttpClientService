@@ -21,7 +21,7 @@ namespace Blauhaus.HttpClientService._Ioc
         public static IServiceCollection RegisterServerHttpService(this IServiceCollection services, TraceListener traceListener) 
         {
             services.RegisterAccessToken();
-            services.RegisterConsoleLoggerService(traceListener);
+            //services.RegisterConsoleLoggerService(traceListener);
             Register(services);
             return services;
         }
@@ -29,7 +29,7 @@ namespace Blauhaus.HttpClientService._Ioc
         public static IServiceCollection RegisterServerHttpService<TAccessToken>(this IServiceCollection services, TraceListener traceListener) where TAccessToken : AuthenticatedAccessToken
         {
             services.RegisterAccessToken();
-            services.RegisterConsoleLoggerService(traceListener);
+            //.RegisterConsoleLoggerService(traceListener);
             Register(services);
             return services;
         }
