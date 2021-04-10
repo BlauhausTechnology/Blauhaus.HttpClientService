@@ -12,7 +12,6 @@ using Blauhaus.HttpClientService.Abstractions;
 using Blauhaus.HttpClientService.Abstractions.Exceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Polly;
 
 namespace Blauhaus.HttpClientService.Service
 {

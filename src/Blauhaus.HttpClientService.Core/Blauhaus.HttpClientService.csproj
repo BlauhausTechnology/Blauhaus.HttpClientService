@@ -8,14 +8,19 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include=".Ioc\IocServiceExtensions.cs" />
+    <Compile Include=".Ioc\ServiceCollectionExtensions.cs" />
+  </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="Blauhaus.Analytics.Console" Version="1.3.1" />
-    <PackageReference Include="Blauhaus.Auth.Abstractions" Version="0.10.1" />
-    <PackageReference Include="Blauhaus.Ioc.Abstractions" Version="1.2.3" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.9" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.9" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Blauhaus.Analytics.Console" Version="1.5.2" />
+    <PackageReference Include="Blauhaus.Auth.Abstractions" Version="0.11.6" />
+    <PackageReference Include="Blauhaus.Ioc.Abstractions" Version="1.3.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Polly" Version="7.2.1" />
   </ItemGroup>
   

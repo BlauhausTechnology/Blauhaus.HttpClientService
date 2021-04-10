@@ -1,12 +1,12 @@
 ﻿using System.Diagnostics;
-using Blauhaus.Analytics.Console._Ioc;
-using Blauhaus.Auth.Abstractions._Ioc;
+using Blauhaus.Analytics.Console.Ioc;
 using Blauhaus.Auth.Abstractions.AccessToken;
+using Blauhaus.Auth.Abstractions.Ioc;
 using Blauhaus.HttpClientService.Abstractions;
 using Blauhaus.HttpClientService.Config;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Blauhaus.HttpClientService._Ioc
+namespace Blauhaus.HttpClientService.Ioc
 {
     public static class ServiceCollectionExtensions
     {
