@@ -25,11 +25,12 @@ namespace Blauhaus.HttpClientService.Ioc
             return services;
         }
 
-        public static void AddHttpService(IServiceCollection services)
+        public static IServiceCollection AddHttpService(IServiceCollection services)
         {
             services.AddHttpClient();
             services.AddScoped<IHttpClientService, Service.HttpClientService>();
             services.AddScoped<IHttpClientServiceConfig, DefaultHttpClientServiceConfig>();
+            return services;
         }
     }
 }
