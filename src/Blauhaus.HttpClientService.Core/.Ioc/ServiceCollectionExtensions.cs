@@ -5,36 +5,27 @@ using Blauhaus.Auth.Abstractions.Ioc;
 using Blauhaus.HttpClientService.Abstractions;
 using Blauhaus.HttpClientService.Config;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Blauhaus.HttpClientService.Ioc
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection RegisterClientHttpService(this IServiceCollection services) 
+        public static IServiceCollection AddClientHttpService(this IServiceCollection services) 
         {
-            services.RegisterAccessToken();
-            services.RegisterConsoleLoggerClientService();
-            Register(services);
+            services.TryAddSingleton<IAuthenticatedAccessToken, AuthenticatedAccessToken>();
+            AddHttpService(services);
             return services;
         }
 
-        public static IServiceCollection RegisterServerHttpService(this IServiceCollection services, TraceListener traceListener) 
+        public static IServiceCollection AddServerHttpService(this IServiceCollection services, TraceListener traceListener) 
         {
-            services.RegisterAccessToken();
-            //services.RegisterConsoleLoggerService(traceListener);
-            Register(services);
+            services.TryAddScoped<IAuthenticatedAccessToken, AuthenticatedAccessToken>();
+            AddHttpService(services);
             return services;
         }
 
-        public static IServiceCollection RegisterServerHttpService<TAccessToken>(this IServiceCollection services, TraceListener traceListener) where TAccessToken : AuthenticatedAccessToken
-        {
-            services.RegisterAccessToken();
-            //.RegisterConsoleLoggerService(traceListener);
-            Register(services);
-            return services;
-        }
-
-        private static void Register(IServiceCollection services)
+        public static void AddHttpService(IServiceCollection services)
         {
             services.AddHttpClient();
             services.AddScoped<IHttpClientService, Service.HttpClientService>();
