@@ -26,7 +26,7 @@ namespace Blauhaus.HttpClientService.Tests.Tests
 
                 //Assert
                 MockMessageHandler.VerifyUri("http://baseaddress.com/testroute");
-                MockMessageHandler.VerifyContent("hello world");
+                MockMessageHandler.VerifyContent(x => x.Contains("hello world"));
             }
 
             [Test]
@@ -105,7 +105,7 @@ namespace Blauhaus.HttpClientService.Tests.Tests
 
                 //Assert
                 MockMessageHandler.VerifyUri("http://baseaddress.com/testroute");
-                MockMessageHandler.VerifyContent("hello world");
+                MockMessageHandler.VerifyContent(x => x.Contains("hello world"));
                 MockMessageHandler.VerifyMethod(HttpMethod.Post);
             }
 

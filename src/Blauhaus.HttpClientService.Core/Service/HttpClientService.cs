@@ -12,7 +12,6 @@ using Blauhaus.HttpClientService.Abstractions;
 using Blauhaus.HttpClientService.Abstractions.Exceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Polly;
 
 namespace Blauhaus.HttpClientService.Service
 {
@@ -40,6 +39,8 @@ namespace Blauhaus.HttpClientService.Service
 
         public async Task<TResponse> PostAsync<TRequest, TResponse>(string route, TRequest dto, CancellationToken token)
         {
+            var start = DateTime.Now;
+
             var httpClient = GetClient(new Dictionary<string, string>(), new KeyValuePair<string, string>());
             var httpContent = new StringContent(JsonConvert.SerializeObject(dto), new UTF8Encoding(), "application/json");
 
@@ -47,15 +48,17 @@ namespace Blauhaus.HttpClientService.Service
 
             if (responseMessage.IsSuccessStatusCode)
             {
-                return await UnwrapResponseAsync<TResponse>(responseMessage);
+                return await UnwrapResponseAsync<TResponse>(responseMessage, start);
             }
 
-            await HandleFailResponseAsync(responseMessage);
+            await HandleFailResponseAsync(responseMessage, start);
             return default;
         }
 
         public async Task<TResponse> PostAsync<TRequest, TResponse>(IHttpRequestWrapper<TRequest> request, CancellationToken token)
         {
+            var start = DateTime.Now;
+
             var httpContent = new StringContent(JsonConvert.SerializeObject(request.Request), new UTF8Encoding(), "application/json");
             var client = GetClient(request.RequestHeaders, request.AuthorizationHeader);
 
@@ -63,14 +66,16 @@ namespace Blauhaus.HttpClientService.Service
 
             if (!httpResponse.IsSuccessStatusCode)
             {
-                await HandleFailResponseAsync(httpResponse);
+                await HandleFailResponseAsync(httpResponse, start);
             }
             
-            return await UnwrapResponseAsync<TResponse>(httpResponse);
+            return await UnwrapResponseAsync<TResponse>(httpResponse, start);
         }
 
         public async Task PostAsync<TRequest>(string route, TRequest dto, CancellationToken token)
         {
+            var start = DateTime.Now;
+
             var httpContent = new StringContent(JsonConvert.SerializeObject(dto), new UTF8Encoding(), "application/json");
             var httpClient = GetClient(new Dictionary<string, string>(), new KeyValuePair<string, string>());
             
@@ -78,12 +83,14 @@ namespace Blauhaus.HttpClientService.Service
 
             if (!httpResponse.IsSuccessStatusCode)
             {
-                await HandleFailResponseAsync(httpResponse);
+                await HandleFailResponseAsync(httpResponse, start);
             }
         }
 
         public  async Task<TResponse> PatchAsync<TResponse>(IHttpRequestWrapper<JObject> request, CancellationToken token)
         {
+            var start = DateTime.Now;
+
             var httpContent = new StringContent(request.Request.ToString(), new UTF8Encoding(), "application/json");
             var requestMessage = new HttpRequestMessage(new HttpMethod("PATCH"), request.Url) {Content = httpContent};
             var client = GetClient(request.RequestHeaders, request.AuthorizationHeader);
@@ -92,38 +99,42 @@ namespace Blauhaus.HttpClientService.Service
 
             if (!httpResponse.IsSuccessStatusCode)
             {
-                await HandleFailResponseAsync(httpResponse);
+                await HandleFailResponseAsync(httpResponse, start);
             }
             
-            return await UnwrapResponseAsync<TResponse>(httpResponse);
+            return await UnwrapResponseAsync<TResponse>(httpResponse, start);
         }
 
         public async Task<TResponse> GetAsync<TResponse>(IHttpRequestWrapper request, CancellationToken token)
         {
+            var start = DateTime.Now;
+
             var client = GetClient(request.RequestHeaders, request.AuthorizationHeader);
 
             var httpResponse = await TryExecuteAsync(t => client.GetAsync(request.Url, t), _timeout, token);
 
             if (!httpResponse.IsSuccessStatusCode)
             {
-                await HandleFailResponseAsync(httpResponse);
+                await HandleFailResponseAsync(httpResponse, start);
             }
             
-            return await UnwrapResponseAsync<TResponse>(httpResponse);
+            return await UnwrapResponseAsync<TResponse>(httpResponse, start);
         }
 
         public async Task<TResponse> DeleteAsync<TResponse>(IHttpRequestWrapper request, CancellationToken token)
         {
+            var start = DateTime.Now;
+
             var client = GetClient(request.RequestHeaders, request.AuthorizationHeader);
 
             var httpResponse = await TryExecuteAsync(t => client.DeleteAsync(request.Url, t), _timeout, token);
 
             if (!httpResponse.IsSuccessStatusCode)
             {
-                await HandleFailResponseAsync(httpResponse);
+                await HandleFailResponseAsync(httpResponse, start);
             }
             
-            return await UnwrapResponseAsync<TResponse>(httpResponse);
+            return await UnwrapResponseAsync<TResponse>(httpResponse, start);
         }
         
         private async Task<HttpResponseMessage> TryExecuteAsync(Func<CancellationToken, Task<HttpResponseMessage>> task, TimeSpan timeout, CancellationToken cancellationToken)
@@ -149,7 +160,7 @@ namespace Blauhaus.HttpClientService.Service
 
         #region Privates
         
-        private async Task<TResponse> UnwrapResponseAsync<TResponse>(HttpResponseMessage httpResponse)
+        private async Task<TResponse> UnwrapResponseAsync<TResponse>(HttpResponseMessage httpResponse, DateTime start)
         {
             var jsonBody = await httpResponse.Content.ReadAsStringAsync();
             var deserializedResponse = JsonConvert.DeserializeObject<TResponse>(jsonBody);
@@ -160,7 +171,7 @@ namespace Blauhaus.HttpClientService.Service
             {
                 trace.Append(httpResponse.RequestMessage.Method.Method)
                     .Append(" to ")
-                    .Append(httpResponse.RequestMessage.RequestUri.AbsoluteUri);
+                    .Append(httpResponse.RequestMessage.RequestUri.Host);
             }
             else
             {
@@ -168,13 +179,14 @@ namespace Blauhaus.HttpClientService.Service
             }
 
             trace.Append(" succeeded with " + httpResponse.StatusCode);
+            trace.Append(" in " + (DateTime.Now - start).TotalMilliseconds + "ms");
 
             _analyticsService.Trace(this, trace.ToString());
 
             return deserializedResponse;
         }
 
-        private async Task HandleFailResponseAsync(HttpResponseMessage httpResponse)
+        private async Task HandleFailResponseAsync(HttpResponseMessage httpResponse, DateTime start)
         {
             var traceProperties = new Dictionary<string, object>
             {
@@ -201,7 +213,7 @@ namespace Blauhaus.HttpClientService.Service
                 throw new HttpClientServiceServerError(httpResponse.StatusCode, error.Message);
             }
 
-            _analyticsService.Trace(this, "HttpClientService: HttpClient error.", LogSeverity.Information, traceProperties);
+            _analyticsService.Trace(this, "HttpClientService: HttpClient error in " + (DateTime.Now - start).TotalMilliseconds + "ms", LogSeverity.Information, traceProperties);
             throw new HttpClientServiceException(httpResponse.StatusCode, httpResponse.ReasonPhrase);
         }
 
