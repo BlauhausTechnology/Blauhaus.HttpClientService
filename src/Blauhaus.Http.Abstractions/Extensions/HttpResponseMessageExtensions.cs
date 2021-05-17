@@ -20,12 +20,12 @@ namespace Blauhaus.Http.Abstractions.Extensions
             if (response.Content != null)
                 response.Content.Dispose();
 
-            var method = response.RequestMessage == null 
-                ? "Unknown" 
+            var method = response.RequestMessage == null
+                ? "Unknown"
                 : response.RequestMessage.Method.Method;
 
             var uri = response.RequestMessage == null || response.RequestMessage.RequestUri == null
-                ? "Unknown" 
+                ? "Unknown"
                 : response.RequestMessage.RequestUri.AbsoluteUri;
 
             var error = JsonConvert.DeserializeObject<HttpError>(content);
@@ -47,7 +47,7 @@ namespace Blauhaus.Http.Abstractions.Extensions
                 throw new Exception($"Value for {typeof(TDto).Name} was null");
             }
 
-            return dto; 
+            return dto;
         }
-
+    }
 }

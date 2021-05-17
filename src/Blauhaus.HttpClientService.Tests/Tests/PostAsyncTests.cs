@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Blauhaus.Http.Abstractions;
 using Blauhaus.HttpClientService.Abstractions.Exceptions;
 using Blauhaus.HttpClientService.Service;
 using Blauhaus.HttpClientService.Tests.Mocks;

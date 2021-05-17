@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Blauhaus.Analytics.Abstractions.Service;
 using Blauhaus.Auth.Abstractions.AccessToken;
+using Blauhaus.Http.Abstractions;
 using Blauhaus.HttpClientService.Abstractions;
 using Blauhaus.HttpClientService.Abstractions.Exceptions;
 using Newtonsoft.Json;
