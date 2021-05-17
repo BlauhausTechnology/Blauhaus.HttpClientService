@@ -1,4 +1,4 @@
-﻿namespace Blauhaus.HttpClientService.Service
+﻿namespace Blauhaus.Http.Abstractions
 {
     public class HttpError
     {
